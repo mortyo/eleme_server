@@ -16,7 +16,7 @@ import promotion from './promotion'
 
 export default app => {
 	// app.get('/', (req, res, next) => {
-	// 	// res.redirect('/');
+	// 	res.redirect('/');
 	// });
 	app.use('/v1', v1);
 	app.use('/v2', v2);

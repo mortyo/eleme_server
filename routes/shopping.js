@@ -1,4 +1,3 @@
-//餐馆、食品、Menu
 'use strict';
 
 import express from 'express';

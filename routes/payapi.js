@@ -1,4 +1,3 @@
-//付款
 'use strict';
 
 import express from 'express';

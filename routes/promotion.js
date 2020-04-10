@@ -1,4 +1,3 @@
-//红包
 'use strict';
 
 import express from 'express';

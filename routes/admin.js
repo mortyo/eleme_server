@@ -1,4 +1,3 @@
-//管理员
 'use strict';
 
 import express from 'express'

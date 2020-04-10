@@ -318,6 +318,7 @@ class Shop extends AddressComponent{
 			})
 			return
 		}
+		
 		try{
 			const restaurants = await ShopModel.find({name: eval('/' + keyword + '/gi')}, '-_id').limit(50);
 			if (restaurants.length) {

@@ -1,8 +1,9 @@
 'use strict';
 
-import pinyin from "pinyin"
 import Cities from '../../models/v1/cities'
+import pinyin from "pinyin"
 import AddressComponent from '../../prototype/addressComponent'
+
 
 class CityHandle extends AddressComponent{
 	constructor(){
@@ -11,7 +12,6 @@ class CityHandle extends AddressComponent{
 		this.getExactAddress = this.getExactAddress.bind(this);
 		this.pois = this.pois.bind(this);
 	}
-	//通过城市类型获取城市数据
 	async getCity(req, res, next){
 		const type = req.query.type;
 		let cityInfo;
@@ -42,7 +42,6 @@ class CityHandle extends AddressComponent{
 			});
 		}
 	}
-	//通过城市id获取城市数据
 	async getCityById(req, res, next){
 		const cityid = req.params.id;
 		if (isNaN(cityid)) {
@@ -62,13 +61,14 @@ class CityHandle extends AddressComponent{
 			});
 		}
 	}
-	//通过城市名字获取城市数据
 	async getCityName(req){
 		try{
 			const cityInfo = await this.guessPosition(req);
-			//汉字转换成拼音
-	    	const pinyinArr = pinyin(cityInfo.city, {
-		  		style: pinyin.STYLE_NORMAL,
+			/*
+			汉字转换成拼音
+			 */
+	    const pinyinArr = pinyin(cityInfo.city, {
+		  	style: pinyin.STYLE_NORMAL,
 			});
 			let cityName = '';
 			pinyinArr.forEach(item => {
@@ -79,7 +79,6 @@ class CityHandle extends AddressComponent{
 			return '北京';
 		}
 	}
-	//通过ip地址获取精确位置
 	async getExactAddress(req, res, next){
 		try{
 			const position = await this.geocoder(req)
@@ -92,7 +91,6 @@ class CityHandle extends AddressComponent{
 			});
 		}
 	}
-	//搜索地址
 	async pois(req, res, next){
 		try{
 			const geohash = req.params.geohash || '';

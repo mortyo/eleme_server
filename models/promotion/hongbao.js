@@ -28,7 +28,7 @@ const hongbaoSchema = new Schema({
 	share_status: Number,
 })
 
-hongbaoSchema.index({ id: 1 });
+hongbaoSchema.index({id: 1});
 
 const Hongbao = mongoose.model('Hongbao', hongbaoSchema);
 
@@ -40,4 +40,4 @@ Hongbao.findOne((err, data) => {
 	}
 })
 
-export default Hongbao
+export default  Hongbao
