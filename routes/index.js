@@ -14,7 +14,7 @@ import member from './member'
 import shopping from './shopping'
 import promotion from './promotion'
 
-export default app => {
+module.exports = (app) => {
 	// app.get('/', (req, res, next) => {
 	// 	res.redirect('/');
 	// });
