@@ -1,3 +1,4 @@
+//解释说明
 'use strict';
 
 import express from 'express';

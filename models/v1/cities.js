@@ -9,11 +9,11 @@ const citySchema = new mongoose.Schema({
 
 citySchema.statics.cityGuess = function(name){
 	return new Promise(async (resolve, reject) => {
-		const firtWord = name.substr(0,1).toUpperCase();
+		const firstWord = name.substr(0,1).toUpperCase();
 		try{
 			const city = await this.findOne();
 			Object.entries(city.data).forEach(item => {
-				if(item[0] == firtWord){
+				if(item[0] == firstWord){
 					item[1].forEach(cityItem => {
 						if (cityItem.pinyin == name) {
 							resolve(cityItem)

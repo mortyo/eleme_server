@@ -7,8 +7,8 @@ baseUrl: https://elm.cangdu.org
 
 ## 目录：
 
-[1、获取城市列表](#1获取城市列表)<br/>
-[2、获取所选城市信息](#2获取所选城市信息)<br/>
+[1、获取城市列表](#1获取城市列表)->[/v1/cities?type=guess](https://elm.cangdu.org/v1/cities?type=guess)<br/>
+[2、获取所选城市信息](#2获取所选城市信息)->[/v1/cities/1](https://elm.cangdu.org/v1/cities/1)<br/>
 [3、搜索地址](#3搜索地址)<br/>
 [4、根据经纬度详细定位](#4根据经纬度详细定位)<br/>
 [5、食品分类列表](#5食品分类列表)<br/>

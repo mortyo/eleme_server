@@ -1,9 +1,10 @@
+//餐馆
 'use strict';
 
 import express from 'express';
-import Food from '../controller/shopping/shop'
-const router = express.Router();
+import shop from '../controller/shopping/shop'
 
-router.get('/restaurants', Food.searchResaturant);
+const router = express.Router();
+router.get('/restaurants', shop.searchResaturant);
 
 export default router
