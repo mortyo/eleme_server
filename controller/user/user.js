@@ -1,21 +1,31 @@
 'use strict';
 
-import AddressComponent from '../../prototype/addressComponent'
-import formidable from 'formidable'
-import UserInfoModel from '../../models/v2/userInfo'
-import UserModel from '../../models/v2/user'
-import crypto from 'crypto'
-import dtime from 'time-formater'
+import crypto from 'crypto'; //crypto密码模块
+import formidable from 'formidable'; //用于解析表单数据，特别是文件上传
+import dtime from 'time-formater'; //时间格式
+import UserModel from '../../models/v2/user';
+import UserInfoModel from '../../models/v2/userInfo';
+import AddressComponent from '../../prototype/addressComponent';
 
 class User extends AddressComponent {
-	constructor(){
-		super()
-		this.login = this.login.bind(this);
+	constructor() {
+		super() //super关键字用于访问和调用一个对象的父对象上的函数。
+		this.login = this.login.bind(this); 
 		this.encryption = this.encryption.bind(this);
 		this.chanegPassword = this.chanegPassword.bind(this);
 		this.updateAvatar = this.updateAvatar.bind(this);
 	}
-	async login(req, res, next){
+	//用Md5封装加密方法
+	encryption(password) {
+		const newpassword = this.Md5(this.Md5(password).substr(2, 7) + this.Md5(password));
+		return newpassword
+	}
+
+	Md5(password) {
+		const md5 = crypto.createHash('md5');
+		return md5.update(password).digest('base64');
+	}
+	async login(req, res, next) {
 		const cap = req.cookies.cap;
 		if (!cap) {
 			console.log('验证码失效')
@@ -27,17 +37,18 @@ class User extends AddressComponent {
 			return
 		}
 		const form = new formidable.IncomingForm();
+		//parse()会转换请求中所包含的表单数据并放到fields对象中，callback会包含所有字段域和文件信息
 		form.parse(req, async (err, fields, files) => {
-			const {username, password, captcha_code} = fields;
-			try{
+			const { username, password, captcha_code } = fields;
+			try {
 				if (!username) {
 					throw new Error('用户名参数错误');
-				}else if(!password){
+				} else if (!password) {
 					throw new Error('密码参数错误');
-				}else if(!captcha_code){
+				} else if (!captcha_code) {
 					throw new Error('验证码参数错误');
 				}
-			}catch(err){
+			} catch (err) {
 				console.log('登陆参数错误', err);
 				res.send({
 					status: 0,
@@ -46,7 +57,7 @@ class User extends AddressComponent {
 				})
 				return
 			}
-			if (cap.toString() !== captcha_code.toString()) {
+			if (cap.toString() !== captcha_code.toString()) { //cap是cookie里的验证码，captcha_code是请求里的验证码
 				res.send({
 					status: 0,
 					type: 'ERROR_CAPTCHA',
@@ -55,34 +66,34 @@ class User extends AddressComponent {
 				return
 			}
 			const newpassword = this.encryption(password);
-			try{
-				const user = await UserModel.findOne({username});
+			try {
 				//创建一个新的用户
+				const user = await UserModel.findOne({ username });
 				if (!user) {
 					const user_id = await this.getId('user_id');
 					const cityInfo = await this.guessPosition(req);
 					const registe_time = dtime().format('YYYY-MM-DD HH:mm');
-					const newUser = {username, password: newpassword, user_id};
-					const newUserInfo = {username, user_id, id: user_id, city: cityInfo.city, registe_time, };
+					const newUser = { username, password: newpassword, user_id };
+					const newUserInfo = { username, user_id, id: user_id, city: cityInfo.city, registe_time, };
 					UserModel.create(newUser);
 					const createUser = new UserInfoModel(newUserInfo);
 					const userinfo = await createUser.save();
 					req.session.user_id = user_id;
 					res.send(userinfo);
-				}else if (user.password.toString() !== newpassword.toString()) {
+				} else if (user.password.toString() !== newpassword.toString()) {
 					console.log('用户登录密码错误')
 					res.send({
 						status: 0,
 						type: 'ERROR_PASSWORD',
 						message: '密码错误',
 					})
-					return 
-				}else{
+					return
+				} else {
 					req.session.user_id = user.user_id;
-					const userinfo = await UserInfoModel.findOne({user_id: user.user_id}, '-_id');
-					res.send(userinfo) 
+					const userinfo = await UserInfoModel.findOne({ user_id: user.user_id }, '-_id');
+					res.send(userinfo)
 				}
-			}catch(err){
+			} catch (err) {
 				console.log('用户登陆失败', err);
 				res.send({
 					status: 0,
@@ -92,23 +103,23 @@ class User extends AddressComponent {
 			}
 		})
 	}
-	async getInfo(req, res, next){
+	async getInfo(req, res, next) {
 		const sid = req.session.user_id;
 		const qid = req.query.user_id;
 		const user_id = sid || qid;
 		if (!user_id || !Number(user_id)) {
-			// console.log('获取用户信息的参数user_id无效', user_id)
+			console.log('获取用户信息的参数user_id无效', user_id)
 			res.send({
 				status: 0,
 				type: 'GET_USER_INFO_FAIELD',
 				message: '通过session获取用户信息失败',
 			})
-			return 
+			return
 		}
-		try{
-			const userinfo = await UserInfoModel.findOne({user_id}, '-_id');
-			res.send(userinfo) 
-		}catch(err){
+		try {
+			const userinfo = await UserInfoModel.findOne({ user_id }, '-_id');
+			res.send(userinfo)
+		} catch (err) {
 			console.log('通过session获取用户信息失败', err);
 			res.send({
 				status: 0,
@@ -117,7 +128,7 @@ class User extends AddressComponent {
 			})
 		}
 	}
-	async getInfoById(req, res, next){
+	async getInfoById(req, res, next) {
 		const user_id = req.params.user_id;
 		if (!user_id || !Number(user_id)) {
 			console.log('通过ID获取用户信息失败')
@@ -126,12 +137,12 @@ class User extends AddressComponent {
 				type: 'GET_USER_INFO_FAIELD',
 				message: '通过用户ID获取用户信息失败',
 			})
-			return 
+			return
 		}
-		try{
-			const userinfo = await UserInfoModel.findOne({user_id}, '-_id');
-			res.send(userinfo) 
-		}catch(err){
+		try {
+			const userinfo = await UserInfoModel.findOne({ user_id }, '-_id');
+			res.send(userinfo)
+		} catch (err) {
 			console.log('通过用户ID获取用户信息失败', err);
 			res.send({
 				status: 0,
@@ -140,14 +151,14 @@ class User extends AddressComponent {
 			})
 		}
 	}
-	async signout(req, res, next){
+	async signout(req, res, next) {
 		delete req.session.user_id;
 		res.send({
 			status: 1,
 			message: '退出成功'
 		})
 	}
-	async chanegPassword(req, res, next){
+	async chanegPassword(req, res, next) {
 		const cap = req.cookies.cap;
 		if (!cap) {
 			console.log('验证码失效')
@@ -160,22 +171,22 @@ class User extends AddressComponent {
 		}
 		const form = new formidable.IncomingForm();
 		form.parse(req, async (err, fields, files) => {
-			const {username, oldpassWord, newpassword, confirmpassword, captcha_code} = fields;
-			try{
+			const { username, oldpassWord, newpassword, confirmpassword, captcha_code } = fields;
+			try {
 				if (!username) {
 					throw new Error('用户名参数错误');
-				}else if(!oldpassWord){
+				} else if (!oldpassWord) {
 					throw new Error('必须添加旧密码');
-				}else if(!newpassword){
+				} else if (!newpassword) {
 					throw new Error('必须填写新密码');
-				}else if(!confirmpassword){
+				} else if (!confirmpassword) {
 					throw new Error('必须填写确认密码');
-				}else if(newpassword !== confirmpassword){
+				} else if (newpassword !== confirmpassword) {
 					throw new Error('两次密码不一致');
-				}else if(!captcha_code){
+				} else if (!captcha_code) {
 					throw new Error('请填写验证码');
 				}
-			}catch(err){
+			} catch (err) {
 				console.log('修改密码参数错误', err);
 				res.send({
 					status: 0,
@@ -193,21 +204,21 @@ class User extends AddressComponent {
 				return
 			}
 			const md5password = this.encryption(oldpassWord);
-			try{
-				const user = await UserModel.findOne({username});
+			try {
+				const user = await UserModel.findOne({ username });
 				if (!user) {
 					res.send({
 						status: 0,
 						type: 'USER_NOT_FOUND',
 						message: '未找到当前用户',
 					})
-				}else if(user.password.toString() !== md5password.toString()){
+				} else if (user.password.toString() !== md5password.toString()) {
 					res.send({
 						status: 0,
 						type: 'ERROR_PASSWORD',
 						message: '密码不正确',
 					})
-				}else{
+				} else {
 					user.password = this.encryption(newpassword);
 					user.save();
 					res.send({
@@ -215,7 +226,7 @@ class User extends AddressComponent {
 						success: '密码修改成功',
 					})
 				}
-			}catch(err){
+			} catch (err) {
 				console.log('修改密码失败', err);
 				res.send({
 					status: 0,
@@ -225,20 +236,12 @@ class User extends AddressComponent {
 			}
 		})
 	}
-	encryption(password){
-		const newpassword = this.Md5(this.Md5(password).substr(2, 7) + this.Md5(password));
-		return newpassword
-	}
-	Md5(password){
-		const md5 = crypto.createHash('md5');
-		return md5.update(password).digest('base64');
-	}
-	async getUserList(req, res, next){
-		const {limit = 20, offset = 0} = req.query;
-		try{
-			const users = await UserInfoModel.find({}, '-_id').sort({user_id: -1}).limit(Number(limit)).skip(Number(offset));
+	async getUserList(req, res, next) {
+		const { limit = 20, offset = 0 } = req.query;
+		try {
+			const users = await UserInfoModel.find({}, '-_id').sort({ user_id: -1 }).limit(Number(limit)).skip(Number(offset));
 			res.send(users);
-		}catch(err){
+		} catch (err) {
 			console.log('获取用户列表数据失败', err);
 			res.send({
 				status: 0,
@@ -247,14 +250,14 @@ class User extends AddressComponent {
 			})
 		}
 	}
-	async getUserCount(req, res, next){
-		try{
+	async getUserCount(req, res, next) {
+		try {
 			const count = await UserInfoModel.count();
 			res.send({
 				status: 1,
 				count,
 			})
-		}catch(err){
+		} catch (err) {
 			console.log('获取用户数量失败', err);
 			res.send({
 				status: 0,
@@ -263,7 +266,7 @@ class User extends AddressComponent {
 			})
 		}
 	}
-	async updateAvatar(req, res, next){
+	async updateAvatar(req, res, next) {
 		const sid = req.session.user_id;
 		const pid = req.params.user_id;
 		const user_id = sid || pid;
@@ -274,17 +277,17 @@ class User extends AddressComponent {
 				type: 'ERROR_USERID',
 				message: 'user_id参数错误',
 			})
-			return 
+			return
 		}
 
-		try{
+		try {
 			const image_path = await this.getPath(req);
-			await UserInfoModel.findOneAndUpdate({user_id}, {$set: {avatar: image_path}});
+			await UserInfoModel.findOneAndUpdate({ user_id }, { $set: { avatar: image_path } });
 			res.send({
 				status: 1,
 				image_path,
 			})
-		}catch(err){
+		} catch (err) {
 			console.log('上传图片失败', err);
 			res.send({
 				status: 0,
@@ -293,11 +296,11 @@ class User extends AddressComponent {
 			})
 		}
 	}
-	async getUserCity(req, res, next){
+	async getUserCity(req, res, next) {
 		const cityArr = ['北京', '上海', '深圳', '杭州'];
 		const filterArr = [];
 		cityArr.forEach(item => {
-			filterArr.push(UserInfoModel.find({city: item}).count())
+			filterArr.push(UserInfoModel.find({ city: item }).count())
 		})
 		filterArr.push(UserInfoModel.$where('!"北京上海深圳杭州".includes(this.city)').count())
 		Promise.all(filterArr).then(result => {
@@ -320,6 +323,6 @@ class User extends AddressComponent {
 			})
 		})
 	}
-} 
+}
 
 export default new User()

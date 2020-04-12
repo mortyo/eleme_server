@@ -14,6 +14,14 @@ class Admin extends AddressComponent {
 		this.encryption = this.encryption.bind(this)
 		this.updateAvatar = this.updateAvatar.bind(this)
 	}
+	encryption(password){
+		const newpassword = this.Md5(this.Md5(password).substr(2, 7) + this.Md5(password));
+		return newpassword
+	}
+	Md5(password){
+		const md5 = crypto.createHash('md5');
+		return md5.update(password).digest('base64');
+	}
 	async login(req, res, next){
 		const form = new formidable.IncomingForm();
 		form.parse(req, async (err, fields, files) => {
@@ -152,14 +160,6 @@ class Admin extends AddressComponent {
 			}
 		})
 	}
-	encryption(password){
-		const newpassword = this.Md5(this.Md5(password).substr(2, 7) + this.Md5(password));
-		return newpassword
-	}
-	Md5(password){
-		const md5 = crypto.createHash('md5');
-		return md5.update(password).digest('base64');
-	}
 	async singout(req, res, next){
 		try{
 			delete req.session.admin_id;
@@ -174,7 +174,7 @@ class Admin extends AddressComponent {
 				message: '退出失败'
 			})
 		}
-	}
+	}	
 	async getAllAdmin(req, res, next){
 		const {limit = 20, offset = 0} = req.query;
 		try{

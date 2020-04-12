@@ -5,7 +5,7 @@ import AddressComponent from '../../prototype/addressComponent'
 import Food from './food'
 import formidable from 'formidable'
 import CategoryHandle from './category'
-import Rating from '../ugc/rating'
+import Rating from './rating'
 
 class Shop extends AddressComponent{
 	constructor(){

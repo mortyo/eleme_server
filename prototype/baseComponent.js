@@ -60,7 +60,7 @@ export default class BaseComponent {
 	}
 	//获取id列表
 	async getId(type) {
-		if (!this.idList.includes(type)) {
+		if (!this.idList.includes(type)) { //includes()返回一个布尔值，表示某个数组是否包含给定的值
 			console.log('id类型错误');
 			throw new Error('id类型错误');
 			return
