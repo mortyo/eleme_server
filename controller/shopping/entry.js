@@ -1,6 +1,6 @@
 'use strict';
 
-import EntryModel from '../../models/v2/entry'
+import EntryModel from '../../models/shopping/entry'
 
 class Entry {
 	constructor(){

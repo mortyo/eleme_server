@@ -15,7 +15,7 @@ class AddressComponent extends BaseComponent {
 		this.baidukey = 'fjke3YUipM9N64GdOIh1DNeK2APO2WcT';
 		// this.baidukey2 = 'fjke3YUipM9N64GdOIh1DNeK2APO2WcT';
 	}
-	//获取定位地址
+	//通过 请求 获取定位地址
 	async guessPosition(req){
 		return new Promise(async (resolve, reject) => {
 			let ip;
@@ -29,7 +29,7 @@ class AddressComponent extends BaseComponent {
 			 		req.socket.remoteAddress ||
 			 		req.connection.socket.remoteAddress;
 			 		const ipArr = ip.split(':');
-			 		ip = ipArr[ipArr.length -1] || defaultIp;
+					ip = ipArr[ipArr.length -1] || defaultIp;
 				} catch (e) {
 					ip = defaultIp;
 				}
@@ -74,7 +74,7 @@ class AddressComponent extends BaseComponent {
 	 		}
 		})
 	}
-	//搜索地址
+	//通过 关键字+城市名字 搜索地址
 	async searchPlace(keyword, cityName, type = 'search'){
 		try{
 			const resObj = await this.fetch('http://apis.map.qq.com/ws/place/v1/search', {
@@ -141,7 +141,7 @@ class AddressComponent extends BaseComponent {
 			throw new Error(err);
 		}
 	}
-	//通过ip地址获取精确位置
+	//通过 请求ip地址 获取精确位置
 	async geocoder(req){
 		try{
 			const address = await this.guessPosition(req);
@@ -172,7 +172,7 @@ class AddressComponent extends BaseComponent {
 			throw new Error(err);
 		}
 	}
-	//通过geohash获取精确位置
+	//通过 geohash 获取精确位置
 	async getpois(lat, lng){
 		try{
 			const params = {

@@ -1,7 +1,7 @@
 'use strict';
 
 import formidable from 'formidable';
-import AddressModel from '../../models/v1/address';
+import AddressModel from '../../models/address/address';
 import BaseComponent from '../../prototype/baseComponent';
 
 class Address extends BaseComponent {

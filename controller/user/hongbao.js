@@ -1,6 +1,6 @@
 'use strict'
 
-import HongbaoModel from '../../models/promotion/hongbao';
+import HongbaoModel from '../../models/user/hongbao';
 import BaseComponent from '../../prototype/baseComponent';
 
 class Hongbao extends BaseComponent {

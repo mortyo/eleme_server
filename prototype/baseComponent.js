@@ -75,7 +75,7 @@ export default class BaseComponent {
 			throw new Error(err)
 		}
 	}
-
+	//上传图片
 	async uploadImg(req, res, next) {
 		const type = req.params.type;
 		try {
@@ -94,7 +94,7 @@ export default class BaseComponent {
 			})
 		}
 	}
-
+	//获取图片路径
 	async getPath(req, res) {
 		return new Promise((resolve, reject) => {
 			const form = formidable.IncomingForm();
@@ -146,7 +146,7 @@ export default class BaseComponent {
 			});
 		})
 	}
-
+	//通过 七牛 存储图片
 	async qiniu(req, type = 'default') {
 		return new Promise((resolve, reject) => {
 			const form = formidable.IncomingForm();

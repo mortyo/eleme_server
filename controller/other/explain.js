@@ -1,16 +1,16 @@
 'use strict';
 
-import ExplainModel from '../../models/v3/explain'
+import ExplainModel from '../../models/other/explain';
 
 class Explain {
-	constructor(){
+	constructor() {
 
 	}
-	async getExpalin(req, res, next){
-		try{
+	async getExpalin(req, res, next) {
+		try {
 			const explain = await ExplainModel.findOne();
 			res.send(explain.data)
-		}catch(err){
+		} catch (err) {
 			console.log('获取服务中心数据失败', err);
 			res.send({
 				status: 0,

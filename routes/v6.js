@@ -5,7 +5,7 @@ import Statis from '../controller/statis/statis'
 
 const router = express.Router()
 
-router.get('/api/:date/count', Statis.apiCount)
+router.get('/api/:date/count', Statis.apiCount) //date格式：2017-05-29
 router.get('/api/count', Statis.apiAllCount)
 router.get('/api/all', Statis.allApiRecord) 
 router.get('/user/:date/count', Statis.userCount)

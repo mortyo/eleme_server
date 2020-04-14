@@ -28,7 +28,7 @@ const app = express();
 // });
 
 const MongoStore = connectMongo(session);
-app.use(cookieParser());
+app.use(cookieParser()); //用于读取cookie
 app.use(session({
 	name: config.session.name,
 	secret: config.session.secret,

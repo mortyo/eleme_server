@@ -6,14 +6,16 @@ import cityData from '../../InitData/cities'
 const citySchema = new mongoose.Schema({
 	data: {}
 });
-
+//模型扩展，以下都是模型
 citySchema.statics.cityGuess = function(name){
 	return new Promise(async (resolve, reject) => {
-		const firtWord = name.substr(0,1).toUpperCase();
+		//name == 'shanghai'
+		const firstWord = name.substr(0,1).toUpperCase();
+		// firstWord == 'S'
 		try{
 			const city = await this.findOne();
 			Object.entries(city.data).forEach(item => {
-				if(item[0] == firtWord){
+				if(item[0] == firstWord){
 					item[1].forEach(cityItem => {
 						if (cityItem.pinyin == name) {
 							resolve(cityItem)
@@ -68,6 +70,7 @@ citySchema.statics.getCityById = function(id){
 	return new Promise(async (resolve, reject) => {
 		try{
 			const city = await this.findOne();
+			//对象通过Object.entries()返回数组
 			Object.entries(city.data).forEach(item => {
 				if(item[0] !== '_id' && item[0] !== 'hotCities'){
 					item[1].forEach(cityItem => {

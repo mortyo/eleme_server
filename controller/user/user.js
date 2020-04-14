@@ -3,8 +3,8 @@
 import crypto from 'crypto'; //crypto密码模块
 import formidable from 'formidable'; //用于解析表单数据，特别是文件上传
 import dtime from 'time-formater'; //时间格式
-import UserModel from '../../models/v2/user';
-import UserInfoModel from '../../models/v2/userInfo';
+import UserModel from '../../models/user/user';
+import UserInfoModel from '../../models/user/userInfo';
 import AddressComponent from '../../prototype/addressComponent';
 
 class User extends AddressComponent {
@@ -20,7 +20,6 @@ class User extends AddressComponent {
 		const newpassword = this.Md5(this.Md5(password).substr(2, 7) + this.Md5(password));
 		return newpassword
 	}
-
 	Md5(password) {
 		const md5 = crypto.createHash('md5');
 		return md5.update(password).digest('base64');
@@ -67,7 +66,7 @@ class User extends AddressComponent {
 			}
 			const newpassword = this.encryption(password);
 			try {
-				//创建一个新的用户
+				//查找用户，如果，用户为空，创建一个新的用户
 				const user = await UserModel.findOne({ username });
 				if (!user) {
 					const user_id = await this.getId('user_id');
@@ -75,8 +74,8 @@ class User extends AddressComponent {
 					const registe_time = dtime().format('YYYY-MM-DD HH:mm');
 					const newUser = { username, password: newpassword, user_id };
 					const newUserInfo = { username, user_id, id: user_id, city: cityInfo.city, registe_time, };
-					UserModel.create(newUser);
-					const createUser = new UserInfoModel(newUserInfo);
+					UserModel.create(newUser); //用户名，密码，id
+					const createUser = new UserInfoModel(newUserInfo); //用户详细信息
 					const userinfo = await createUser.save();
 					req.session.user_id = user_id;
 					res.send(userinfo);
@@ -236,36 +235,6 @@ class User extends AddressComponent {
 			}
 		})
 	}
-	async getUserList(req, res, next) {
-		const { limit = 20, offset = 0 } = req.query;
-		try {
-			const users = await UserInfoModel.find({}, '-_id').sort({ user_id: -1 }).limit(Number(limit)).skip(Number(offset));
-			res.send(users);
-		} catch (err) {
-			console.log('获取用户列表数据失败', err);
-			res.send({
-				status: 0,
-				type: 'GET_DATA_ERROR',
-				message: '获取用户列表数据失败'
-			})
-		}
-	}
-	async getUserCount(req, res, next) {
-		try {
-			const count = await UserInfoModel.count();
-			res.send({
-				status: 1,
-				count,
-			})
-		} catch (err) {
-			console.log('获取用户数量失败', err);
-			res.send({
-				status: 0,
-				type: 'ERROR_TO_GET_USER_COUNT',
-				message: '获取用户数量失败'
-			})
-		}
-	}
 	async updateAvatar(req, res, next) {
 		const sid = req.session.user_id;
 		const pid = req.params.user_id;
@@ -293,6 +262,38 @@ class User extends AddressComponent {
 				status: 0,
 				type: 'ERROR_UPLOAD_IMG',
 				message: '上传图片失败'
+			})
+		}
+	}
+
+	
+	async getUserList(req, res, next) {
+		const { limit = 20, offset = 0 } = req.query;
+		try {
+			const users = await UserInfoModel.find({}, '-_id').sort({ user_id: -1 }).limit(Number(limit)).skip(Number(offset));
+			res.send(users);
+		} catch (err) {
+			console.log('获取用户列表数据失败', err);
+			res.send({
+				status: 0,
+				type: 'GET_DATA_ERROR',
+				message: '获取用户列表数据失败'
+			})
+		}
+	}
+	async getUserCount(req, res, next) {
+		try {
+			const count = await UserInfoModel.count();
+			res.send({
+				status: 1,
+				count,
+			})
+		} catch (err) {
+			console.log('获取用户数量失败', err);
+			res.send({
+				status: 0,
+				type: 'ERROR_TO_GET_USER_COUNT',
+				message: '获取用户数量失败'
 			})
 		}
 	}

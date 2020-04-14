@@ -1,16 +1,15 @@
 'use strict'
 
 import StatisModel from '../../models/statis/statis'
-import UserInfoModel from '../../models/v2/userInfo'
-import OrderModel from '../../models/bos/order'
-import dtime from 'time-formater'
+import UserInfoModel from '../../models/user/userInfo'
 import AdminModel from '../../models/admin/admin'
+import OrderModel from '../../models/user/order'
 
 class Statis {
-	constructor(){
+	constructor() {
 
 	}
-	async apiCount(req, res, next){
+	async apiCount(req, res, next) {
 		const date = req.params.date;
 		if (!date) {
 			console.log('参数错误')
@@ -21,13 +20,13 @@ class Statis {
 			})
 			return
 		}
-		try{
-			const count = await StatisModel.find({date}).count()
+		try {
+			const count = await StatisModel.find({ date }).count()
 			res.send({
 				status: 1,
 				count,
 			})
-		}catch(err){
+		} catch (err) {
 			console.log('获取当天API请求次数失败');
 			res.send({
 				status: 0,
@@ -36,14 +35,14 @@ class Statis {
 			})
 		}
 	}
-	async apiAllCount(req, res, next){
-		try{
+	async apiAllCount(req, res, next) {
+		try {
 			const count = await StatisModel.count()
 			res.send({
 				status: 1,
 				count,
 			})
-		}catch(err){
+		} catch (err) {
 			console.log('获取所有API请求次数失败');
 			res.send({
 				status: 0,
@@ -52,11 +51,11 @@ class Statis {
 			})
 		}
 	}
-	async allApiRecord(req, res, next){
-		try{
+	async allApiRecord(req, res, next) {
+		try {
 			const allRecord = await StatisModel.find({}, '-_id -__v')
 			res.send(allRecord)
-		}catch(err){
+		} catch (err) {
 			console.log('获取所有API请求信息失败');
 			res.send({
 				status: 0,
@@ -65,7 +64,7 @@ class Statis {
 			})
 		}
 	}
-	async userCount(req, res, next){
+	async userCount(req, res, next) {
 		const date = req.params.date;
 		if (!date) {
 			console.log('参数错误')
@@ -76,13 +75,13 @@ class Statis {
 			})
 			return
 		}
-		try{
-			const count = await UserInfoModel.find({registe_time: eval('/^' + date + '/gi')}).count()
+		try {
+			const count = await UserInfoModel.find({ registe_time: eval('/^' + date + '/gi') }).count() //eval() 函数可计算某个字符串，并执行其中的的 JavaScript 代码。
 			res.send({
 				status: 1,
 				count,
 			})
-		}catch(err){
+		} catch (err) {
 			console.log('获取当天注册人数失败');
 			res.send({
 				status: 0,
@@ -91,7 +90,7 @@ class Statis {
 			})
 		}
 	}
-	async adminCount(req, res, next){
+	async adminCount(req, res, next) {
 		const date = req.params.date;
 		if (!date) {
 			console.log('参数错误')
@@ -102,13 +101,13 @@ class Statis {
 			})
 			return
 		}
-		try{
-			const count = await AdminModel.find({create_time: eval('/^' + date + '/gi')}).count()
+		try {
+			const count = await AdminModel.find({ create_time: eval('/^' + date + '/gi') }).count()
 			res.send({
 				status: 1,
 				count,
 			})
-		}catch(err){
+		} catch (err) {
 			console.log('获取当天注册管理员人数失败');
 			res.send({
 				status: 0,
@@ -117,7 +116,7 @@ class Statis {
 			})
 		}
 	}
-	async orderCount(req, res, next){
+	async orderCount(req, res, next) {
 		const date = req.params.date;
 		if (!date) {
 			console.log('参数错误')
@@ -128,13 +127,13 @@ class Statis {
 			})
 			return
 		}
-		try{
-			const count = await OrderModel.find({formatted_created_at: eval('/^' + date + '/gi')}).count()
+		try {
+			const count = await OrderModel.find({ formatted_created_at: eval('/^' + date + '/gi') }).count()
 			res.send({
 				status: 1,
 				count,
 			})
-		}catch(err){
+		} catch (err) {
 			console.log('获取当天订单数量失败');
 			res.send({
 				status: 0,

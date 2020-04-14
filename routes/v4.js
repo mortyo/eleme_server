@@ -1,4 +1,4 @@
-//other
+'use strict'
 
 import express from 'express';
 import VipCart from '../controller/other/vipcart';
@@ -8,11 +8,11 @@ import BaseComponent from '../prototype/baseComponent';
 const baseHandle = new BaseComponent();
 const router = express.Router();
 
-router.post('/users/:user_id/delivery_card/physical_card/bind', VipCart.useCart)
+router.post('/vip_cart', VipCart.useCart)
 router.post('/captchas', Captchas.getCaptchas);
-router.get('/profile/explain', Explain.getExpalin);
 router.post('/addimg/:type', baseHandle.uploadImg);
-router.get('/payment/queryOrder', (req, res, next) => {
+router.get('/explain', Explain.getExpalin);
+router.get('/payment', (req, res, next) => {
     res.send({
         status: 0,
         type: 'PAY_FAILED',
