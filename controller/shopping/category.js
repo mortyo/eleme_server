@@ -1,8 +1,8 @@
 'use strict';
 
-import ActivityModel from '../../models/shopping/activity';
 import CategoryModel from '../../models/shopping/category';
 import DeliveryModel from '../../models/shopping/delivery';
+import ActivityModel from '../../models/shopping/activity';
 import BaseComponent from '../../prototype/baseComponent';
 
 class Category extends BaseComponent {
@@ -10,6 +10,13 @@ class Category extends BaseComponent {
 		super()
 	}
 	//获取所有餐馆分类和数量
+	async addCategory(type) {
+		try {
+			await CategoryModel.addCategory(type)
+		} catch (err) {
+			console.log('增加category数量失败');
+		}
+	}
 	async getCategories(req, res, next) {
 		try {
 			const categories = await CategoryModel.find({}, '-_id');
@@ -21,13 +28,6 @@ class Category extends BaseComponent {
 				type: 'ERROR_DATA',
 				message: '获取categories失败'
 			})
-		}
-	}
-	async addCategory(type) {
-		try {
-			await CategoryModel.addCategory(type)
-		} catch (err) {
-			console.log('增加category数量失败');
 		}
 	}
 	async findById(id) {

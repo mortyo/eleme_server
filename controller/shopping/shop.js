@@ -11,14 +11,14 @@ class Shop extends AddressComponent {
 	constructor() {
 		super()
 		this.addShop = this.addShop.bind(this);
-		this.getRestaurants = this.getRestaurants.bind(this);
-		this.searchResaturant = this.searchResaturant.bind(this);
+		this.getShops = this.getShops.bind(this);
+		this.searchShop = this.searchShop.bind(this);
 	}
 	//添加商铺
 	async addShop(req, res, next) {
-		let restaurant_id;
+		let shop_id;
 		try {
-			restaurant_id = await this.getId('restaurant_id');
+			shop_id = await this.getId('shop_id');
 		} catch (err) {
 			console.log('获取商店id失败');
 			res.send({
@@ -68,7 +68,7 @@ class Shop extends AddressComponent {
 				description: fields.description || '',
 				float_delivery_fee: fields.float_delivery_fee || 0,
 				float_minimum_order_amount: fields.float_minimum_order_amount || 0,
-				id: restaurant_id,
+				id: shop_id,
 				is_premium: fields.is_premium || false,
 				is_new: fields.new || false,
 				latitude: fields.latitude,
@@ -170,8 +170,8 @@ class Shop extends AddressComponent {
 				const shop = new ShopModel(newShop);
 				await shop.save();
 				CategoryHandle.addCategory(fields.category)
-				Rating.initData(restaurant_id);
-				Food.initData(restaurant_id);
+				Rating.initData(shop_id);
+				Food.initData(shop_id);
 				res.send({
 					status: 1,
 					sussess: '添加餐馆成功',
@@ -188,19 +188,19 @@ class Shop extends AddressComponent {
 		})
 	}
 	//获取餐馆列表
-	async getRestaurants(req, res, next) {
+	async getShops(req, res, next) {
 		const {
 			latitude,
 			longitude,
 			offset = 0,
 			limit = 20,
 			keyword,
-			restaurant_category_id,
+			shop_category_id,
 			order_by,
 			extras,
 			delivery_mode = [],
 			support_ids = [],
-			restaurant_category_ids = [],
+			shop_category_ids = [],
 		} = req.query;
 
 		try {
@@ -220,8 +220,8 @@ class Shop extends AddressComponent {
 		}
 		let filter = {};
 		//获取对应食品种类
-		if (restaurant_category_ids.length && Number(restaurant_category_ids[0])) {
-			const category = await CategoryHandle.findById(restaurant_category_ids[0]);
+		if (shop_category_ids.length && Number(shop_category_ids[0])) {
+			const category = await CategoryHandle.findById(shop_category_ids[0]);
 			Object.assign(filter, { category })
 		}
 		//按照距离，评分，销量等排序
@@ -269,31 +269,31 @@ class Shop extends AddressComponent {
 			}
 		}
 
-		const restaurants = await ShopModel.find(filter, '-_id').sort(sortBy).limit(Number(limit)).skip(Number(offset))
+		const shops = await ShopModel.find(filter, '-_id').sort(sortBy).limit(Number(limit)).skip(Number(offset))
 		const from = latitude + ',' + longitude;
 		let to = '';
 		//获取百度地图测局所需经度纬度
-		restaurants.forEach((item, index) => {
-			const slpitStr = (index == restaurants.length - 1) ? '' : '|';
+		shops.forEach((item, index) => {
+			const slpitStr = (index == shops.length - 1) ? '' : '|';
 			to += item.latitude + ',' + item.longitude + slpitStr;
 		})
 		try {
-			if (restaurants.length) {
+			if (shops.length) {
 				//获取距离信息，并合并到数据中
 				const distance_duration = await this.getDistance(from, to)
-				restaurants.map((item, index) => {
+				shops.map((item, index) => {
 					return Object.assign(item, distance_duration[index])
 				})
 			}
 		} catch (err) {
 			// 百度地图达到上限后会导致加车失败，需优化
 			console.log('从addressComoponent获取测距数据失败', err);
-			restaurants.map((item, index) => {
+			shops.map((item, index) => {
 				return Object.assign(item, { distance: '10公里', order_lead_time: '40分钟' })
 			})
 		}
 		try {
-			res.send(restaurants)
+			res.send(shops)
 		} catch (err) {
 			res.send({
 				status: 0,
@@ -303,10 +303,10 @@ class Shop extends AddressComponent {
 		}
 	}
 	//搜索餐馆
-	async searchResaturant(req, res, next) {
+	async searchShop(req, res, next) {
 		const { geohash, keyword } = req.query;
 		try {
-			if (!geohash || geohash.indexOf(',') == -1) {
+			if (!geohash || geohash.indexOf(',') == -1) { //indexOf() 方法可返回某个指定的字符串值在字符串中首次出现的位置
 				throw new Error('经纬度参数错误');
 			} else if (!keyword) {
 				throw new Error('关键词参数错误');
@@ -322,23 +322,24 @@ class Shop extends AddressComponent {
 		}
 
 		try {
-			const restaurants = await ShopModel.find({ name: eval('/' + keyword + '/gi') }, '-_id').limit(50);
-			if (restaurants.length) {
-				const [latitude, longitude] = geohash.split(',');
-				const from = latitude + ',' + longitude;
-				let to = '';
+			const shops = await ShopModel.find({ name: eval('/' + keyword + '/gi') }, '-_id').limit(50);
+			// if (shops.length) {
+				// const [latitude, longitude] = geohash.split(',');
+				// const from = latitude + ',' + longitude;
+				// const from = geohash;
+				// let to = '222,111';
 				//获取百度地图测局所需经度纬度
-				restaurants.forEach((item, index) => {
-					const slpitStr = (index == restaurants.length - 1) ? '' : '|';
-					to += item.latitude + ',' + item.longitude + slpitStr;
-				})
+				// shops.forEach((item, index) => {
+				// 	const slpitStr = (index == shops.length - 1) ? '' : '|';
+				// 	to += item.latitude + ',' + item.longitude + slpitStr;
+				// })
 				//获取距离信息，并合并到数据中
-				const distance_duration = await this.getDistance(from, to)
-				restaurants.map((item, index) => {
-					return Object.assign(item, distance_duration[index])
-				})
-			}
-			res.send(restaurants);
+				// const distance_duration = await this.getDistance(from, to)
+				// shops.map((item, index) => {
+				// 	return Object.assign(item, distance_duration[index])
+				// })
+			// }
+			res.send(shops);
 		} catch (err) {
 			console.log('搜索餐馆数据失败');
 			res.send({
@@ -349,9 +350,9 @@ class Shop extends AddressComponent {
 		}
 	}
 	//获取餐馆详情
-	async getRestaurantDetail(req, res, next) {
-		const restaurant_id = req.params.restaurant_id;
-		if (!restaurant_id || !Number(restaurant_id)) {
+	async getShopDetail(req, res, next) {
+		const shop_id = req.params.shop_id;
+		if (!shop_id || !Number(shop_id)) {
 			console.log('获取餐馆详情参数ID错误');
 			res.send({
 				status: 0,
@@ -361,8 +362,8 @@ class Shop extends AddressComponent {
 			return
 		}
 		try {
-			const restaurant = await ShopModel.findOne({ id: restaurant_id }, '-_id');
-			res.send(restaurant)
+			const shop = await ShopModel.findOne({ id: shop_id }, '-_id');
+			res.send(shop)
 		} catch (err) {
 			console.log('获取餐馆详情失败', err);
 			res.send({
@@ -388,7 +389,7 @@ class Shop extends AddressComponent {
 			})
 		}
 	}
-	async updateshop(req, res, next) {
+	async updateShop(req, res, next) {
 		const form = new formidable.IncomingForm();
 		form.parse(req, async (err, fields, files) => {
 			if (err) {
@@ -443,9 +444,9 @@ class Shop extends AddressComponent {
 			}
 		})
 	}
-	async deleteResturant(req, res, next) {
-		const restaurant_id = req.params.restaurant_id;
-		if (!restaurant_id || !Number(restaurant_id)) {
+	async deleteShop(req, res, next) {
+		const shop_id = req.params.shop_id;
+		if (!shop_id || !Number(shop_id)) {
 			console.log('restaurant_id参数错误');
 			res.send({
 				status: 0,
@@ -454,7 +455,7 @@ class Shop extends AddressComponent {
 			})
 			return
 		}
-		if (restaurant_id == 1) {
+		if (shop_id == 1) {
 			res.send({
 				status: 0,
 				message: '此店铺用做展示，请不要删除'
@@ -462,7 +463,7 @@ class Shop extends AddressComponent {
 			return
 		}
 		try {
-			await ShopModel.remove({ id: restaurant_id });
+			await ShopModel.remove({ id: shop_id });
 			res.send({
 				status: 1,
 				success: '删除餐馆成功',

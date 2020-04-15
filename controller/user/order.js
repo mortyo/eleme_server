@@ -111,7 +111,7 @@ class Order extends BaseComponent {
 	}
 	async getOrders(req, res, next) {
 		const user_id = req.params.user_id;
-		const { limit = 0, offset = 0 } = req.query;
+		const { limit = 5, offset = 0 } = req.query;
 		try {
 			if (!user_id || !Number(user_id)) {
 				throw new Error('user_id参数错误')
@@ -138,7 +138,7 @@ class Order extends BaseComponent {
 				} else {
 					item.status_bar.title = '支付超时';
 				}
-				item.time_pass = Math.ceil((timeNow - item.order_time) / 1000);
+				item.time_pass = Math.ceil((timeNow - item.order_time) / 1000); //Math.ceil() 函数返回大于或等于一个给定数字的最小整数
 				item.save()
 				return item
 			})

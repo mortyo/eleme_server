@@ -9,9 +9,9 @@ class Rating {
 		this.getScores = this.getScores.bind(this);
 		this.getTags = this.getTags.bind(this);
 	}
-	async initData(restaurant_id) {
+	async initData(shop_id) {
 		try {
-			const status = await RatingModel.initData(restaurant_id);
+			const status = await RatingModel.initData(shop_id);
 			if (status) {
 				console.log('初始化评论数据成功');
 			}
@@ -21,8 +21,8 @@ class Rating {
 		}
 	}
 	async getRatings(req, res, next) {
-		const restaurant_id = req.params.restaurant_id;
-		if (!restaurant_id || !Number(restaurant_id)) {
+		const shop_id = req.params.shop_id;
+		if (!shop_id || !Number(shop_id)) {
 			res.send({
 				status: 0,
 				type: 'ERROR_PARAMS',
@@ -31,7 +31,7 @@ class Rating {
 			return
 		}
 		try {
-			const ratings = await RatingModel.getData(restaurant_id, this.type[0]);
+			const ratings = await RatingModel.getData(shop_id, this.type[0]);
 			res.send(ratings)
 		} catch (err) {
 			console.log('获取评论列表失败', err);
@@ -43,8 +43,8 @@ class Rating {
 		}
 	}
 	async getScores(req, res, next) {
-		const restaurant_id = req.params.restaurant_id;
-		if (!restaurant_id || !Number(restaurant_id)) {
+		const shop_id = req.params.shop_id;
+		if (!shop_id || !Number(shop_id)) {
 			res.send({
 				status: 0,
 				type: 'ERROR_PARAMS',
@@ -53,7 +53,7 @@ class Rating {
 			return
 		}
 		try {
-			const scores = await RatingModel.getData(restaurant_id, this.type[1]);
+			const scores = await RatingModel.getData(shop_id, this.type[1]);
 			res.send(scores)
 		} catch (err) {
 			console.log('获取评论列表失败', err);
@@ -65,8 +65,8 @@ class Rating {
 		}
 	}
 	async getTags(req, res, next) {
-		const restaurant_id = req.params.restaurant_id;
-		if (!restaurant_id || !Number(restaurant_id)) {
+		const shop_id = req.params.shop_id;
+		if (!shop_id || !Number(shop_id)) {
 			res.send({
 				status: 0,
 				type: 'ERROR_PARAMS',
@@ -75,7 +75,7 @@ class Rating {
 			return
 		}
 		try {
-			const tags = await RatingModel.getData(restaurant_id, this.type[2]);
+			const tags = await RatingModel.getData(shop_id, this.type[2]);
 			res.send(tags)
 		} catch (err) {
 			console.log('获取评论列表失败', err);

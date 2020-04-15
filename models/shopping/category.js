@@ -6,19 +6,19 @@ import categoryData from '../../InitData/category'
 const Schema = mongoose.Schema;
 
 const categorySchema = new Schema({
-	count: Number,
 	id: Number,
-	ids: [],
+	name: String,
+	count: Number,
 	image_url: String,
 	level: Number,
-	name: String,
+	ids: [],
 	sub_categories: [
 		{
-			count: Number,
 			id: Number,
+			name: String,
+			count: Number,
 			image_url: String,
 			level: Number,
-			name: String
 		},
 	]
 });

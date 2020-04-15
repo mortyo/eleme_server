@@ -36,8 +36,9 @@ class User extends AddressComponent {
 			return
 		}
 		const form = new formidable.IncomingForm();
-		//parse()会转换请求中所包含的表单数据并放到fields对象中，callback会包含所有字段域和文件信息
+		//parse()会转换POST请求中所包含的表单数据并放到fields对象中，callback会包含所有字段域和文件信息
 		form.parse(req, async (err, fields, files) => {
+			//fields： { username: '****', password: '****', captcha_code: '****' }
 			const { username, password, captcha_code } = fields;
 			try {
 				if (!username) {
@@ -77,6 +78,7 @@ class User extends AddressComponent {
 					UserModel.create(newUser); //用户名，密码，id
 					const createUser = new UserInfoModel(newUserInfo); //用户详细信息
 					const userinfo = await createUser.save();
+					//req.session保存user_id
 					req.session.user_id = user_id;
 					res.send(userinfo);
 				} else if (user.password.toString() !== newpassword.toString()) {
@@ -88,6 +90,7 @@ class User extends AddressComponent {
 					})
 					return
 				} else {
+					//req.session保存user_id
 					req.session.user_id = user.user_id;
 					const userinfo = await UserInfoModel.findOne({ user_id: user.user_id }, '-_id');
 					res.send(userinfo)
@@ -304,6 +307,7 @@ class User extends AddressComponent {
 			filterArr.push(UserInfoModel.find({ city: item }).count())
 		})
 		filterArr.push(UserInfoModel.$where('!"北京上海深圳杭州".includes(this.city)').count())
+		//Promise.all可以将多个Promise实例包装成一个新的Promise实例
 		Promise.all(filterArr).then(result => {
 			res.send({
 				status: 1,

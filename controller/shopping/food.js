@@ -24,8 +24,8 @@ class Food extends BaseComponent {
 		}]
 		this.initData = this.initData.bind(this);
 		this.addFood = this.addFood.bind(this);
-		this.getCategory = this.getCategory.bind(this);
-		this.addCategory = this.addCategory.bind(this);
+		this.addMenu = this.addMenu.bind(this);
+		this.allMenu = this.allMenu.bind(this);
 		this.getSpecfoods = this.getSpecfoods.bind(this);
 		this.updateFood = this.updateFood.bind(this);
 	}
@@ -50,76 +50,6 @@ class Food extends BaseComponent {
 			}
 		}
 	}
-	async getCategory(req, res, next) {
-		const restaurant_id = req.params.restaurant_id;
-		try {
-			const category_list = await MenuModel.find({ restaurant_id });
-			res.send({
-				status: 1,
-				category_list,
-			})
-		} catch (err) {
-			console.log('获取餐馆食品种类失败');
-			res.send({
-				status: 0,
-				type: 'ERROR_GET_DATA',
-				message: '获取数据失败'
-			})
-		}
-	}
-	async addCategory(req, res, next) {
-		const form = new formidable.IncomingForm();
-		form.parse(req, async (err, fields, files) => {
-			try {
-				if (!fields.name) {
-					throw new Error('必须填写食品类型名称');
-				} else if (!fields.restaurant_id) {
-					throw new Error('餐馆ID错误');
-				}
-			} catch (err) {
-				console.log(err.message, err);
-				res.send({
-					status: 0,
-					type: 'ERROR_PARAMS',
-					message: err.message
-				})
-				return
-			}
-			let category_id;
-			try {
-				category_id = await this.getId('category_id');
-			} catch (err) {
-				console.log('获取category_id失败');
-				res.send({
-					type: 'ERROR_DATA',
-					message: '获取数据失败'
-				})
-				return
-			}
-			const foodObj = {
-				name: fields.name,
-				description: fields.description,
-				restaurant_id: fields.restaurant_id,
-				id: category_id,
-				foods: [],
-			}
-			const newFood = new MenuModel(foodObj);
-			try {
-				await newFood.save();
-				res.send({
-					status: 1,
-					success: '添加食品种类成功',
-				})
-			} catch (err) {
-				console.log('保存数据失败');
-				res.send({
-					status: 0,
-					type: 'ERROR_IN_SAVE_DATA',
-					message: '保存数据失败',
-				})
-			}
-		})
-	}
 	async addFood(req, res, next) {
 		const form = new formidable.IncomingForm();
 		form.parse(req, async (err, fields, files) => {
@@ -132,7 +62,7 @@ class Food extends BaseComponent {
 					throw new Error('至少填写一种规格');
 				} else if (!fields.category_id) {
 					throw new Error('食品类型ID错误');
-				} else if (!fields.restaurant_id) {
+				} else if (!fields.shop_id) {
 					throw new Error('餐馆ID错误');
 				}
 			} catch (err) {
@@ -148,7 +78,7 @@ class Food extends BaseComponent {
 			let restaurant;
 			try {
 				category = await MenuModel.findOne({ id: fields.category_id });
-				restaurant = await ShopModel.findOne({ id: fields.restaurant_id });
+				shop = await ShopModel.findOne({ id: fields.shop_id });
 			} catch (err) {
 				console.log('获取食品类型和餐馆信息失败');
 				res.send({
@@ -179,7 +109,7 @@ class Food extends BaseComponent {
 				image_path: fields.image_path,
 				activity: null,
 				attributes: [],
-				restaurant_id: fields.restaurant_id,
+				shop_id: fields.shop_id,
 				category_id: fields.category_id,
 				satisfy_rate: Math.ceil(Math.random() * 100),
 				satisfy_count: Math.ceil(Math.random() * 1000),
@@ -250,124 +180,13 @@ class Food extends BaseComponent {
 			}
 		})
 	}
-	async getSpecfoods(fields, item_id) {
-		let specfoods = [], specifications = [];
-		if (fields.specs.length < 2) {
-			let food_id, sku_id;
-			try {
-				sku_id = await this.getId('sku_id');
-				food_id = await this.getId('food_id');
-			} catch (err) {
-				throw new Error('获取sku_id、food_id失败')
-			}
-			specfoods.push({
-				packing_fee: fields.specs[0].packing_fee,
-				price: fields.specs[0].price,
-				specs: [],
-				specs_name: fields.specs[0].specs,
-				name: fields.name,
-				item_id,
-				sku_id,
-				food_id,
-				restaurant_id: fields.restaurant_id,
-				recent_rating: (Math.random() * 5).toFixed(1),
-				recent_popularity: Math.ceil(Math.random() * 1000),
-			})
-		} else {
-			specifications.push({
-				values: [],
-				name: "规格"
-			})
-			for (let i = 0; i < fields.specs.length; i++) {
-				let food_id, sku_id;
-				try {
-					sku_id = await this.getId('sku_id');
-					food_id = await this.getId('food_id');
-				} catch (err) {
-					throw new Error('获取sku_id、food_id失败')
-				}
-				specfoods.push({
-					packing_fee: fields.specs[i].packing_fee,
-					price: fields.specs[i].price,
-					specs: [{
-						name: "规格",
-						value: fields.specs[i].specs
-					}],
-					specs_name: fields.specs[i].specs,
-					name: fields.name,
-					item_id,
-					sku_id,
-					food_id,
-					restaurant_id: fields.restaurant_id,
-					recent_rating: (Math.random() * 5).toFixed(1),
-					recent_popularity: Math.ceil(Math.random() * 1000),
-				})
-				specifications[0].values.push(fields.specs[i].specs);
-			}
-		}
-		return [specfoods, specifications]
-	}
-	async getMenu(req, res, next) {
-		const restaurant_id = req.query.restaurant_id;
-		const allMenu = req.query.allMenu;
-		if (!restaurant_id || !Number(restaurant_id)) {
-			console.log('获取餐馆参数ID错误');
-			res.send({
-				status: 0,
-				type: 'ERROR_PARAMS',
-				message: '餐馆ID参数错误',
-			})
-			return
-		}
-		let filter;
-		if (allMenu) {
-			filter = { restaurant_id }
-		} else {
-			filter = { restaurant_id, $where: function () { return this.foods.length } };
-		}
-		try {
-			const menu = await MenuModel.find(filter, '-_id');
-			res.send(menu);
-		} catch (err) {
-			console.log('获取食品数据失败', err);
-			res.send({
-				status: 0,
-				type: 'GET_DATA_ERROR',
-				message: '获取食品数据失败'
-			})
-		}
-	}
-	async getMenuDetail(req, res, next) {
-		const category_id = req.params.category_id;
-		if (!category_id || !Number(category_id)) {
-			console.log('获取Menu详情参数ID错误');
-			res.send({
-				status: 0,
-				type: 'ERROR_PARAMS',
-				message: 'Menu ID参数错误',
-			})
-			return
-		}
-		try {
-			const menu = await MenuModel.findOne({ id: category_id }, '-_id');
-			res.send(menu)
-		} catch (err) {
-			console.log('获取Menu详情失败', err);
-			res.send({
-				status: 0,
-				type: 'GET_DATA_ERROR',
-				message: '获取Menu详情失败'
-			})
-		}
-	}
 	async getFoods(req, res, next) {
-		const { restaurant_id, limit = 20, offset = 0 } = req.query;
+		const { shop_id, limit = 20, offset = 0 } = req.query;
 		try {
 			let filter = {};
-			if (restaurant_id && Number(restaurant_id)) {
-				filter = { restaurant_id }
+			if (shop_id && Number(shop_id)) {
+				filter = { shop_id }
 			}
-
 			const foods = await FoodModel.find(filter, '-_id').sort({ item_id: -1 }).limit(Number(limit)).skip(Number(offset));
 			res.send(foods);
 		} catch (err) {
@@ -380,11 +199,11 @@ class Food extends BaseComponent {
 		}
 	}
 	async getFoodsCount(req, res, next) {
-		const restaurant_id = req.query.restaurant_id;
+		const shop_id = req.query.shop_id;
 		try {
 			let filter = {};
-			if (restaurant_id && Number(restaurant_id)) {
-				filter = { restaurant_id }
+			if (shop_id && Number(shop_id)) {
+				filter = { shop_id }
 			}
 
 			const count = await FoodModel.find(filter).count();
@@ -494,6 +313,157 @@ class Food extends BaseComponent {
 				message: '删除食品失败',
 			})
 		}
+	}
+	async addMenu(req, res, next) {
+		const form = new formidable.IncomingForm();
+		form.parse(req, async (err, fields, files) => {
+			try {
+				if (!fields.name) {
+					throw new Error('必须填写食品类型名称');
+				} else if (!fields.shop_id) {
+					throw new Error('餐馆ID错误');
+				}
+			} catch (err) {
+				console.log(err.message, err);
+				res.send({
+					status: 0,
+					type: 'ERROR_PARAMS',
+					message: err.message
+				})
+				return
+			}
+			let category_id;
+			try {
+				category_id = await this.getId('category_id');
+			} catch (err) {
+				console.log('获取category_id失败');
+				res.send({
+					type: 'ERROR_DATA',
+					message: '获取数据失败'
+				})
+				return
+			}
+			const foodObj = {
+				id: category_id,
+				name: fields.name,
+				shop_id: fields.shop_id,
+				description: fields.description,
+				foods: [],
+			}
+			const newFood = new MenuModel(foodObj);
+			try {
+				await newFood.save();
+				res.send({
+					status: 1,
+					success: '添加食品种类成功',
+				})
+			} catch (err) {
+				console.log('保存数据失败');
+				res.send({
+					status: 0,
+					type: 'ERROR_IN_SAVE_DATA',
+					message: '保存数据失败',
+				})
+			}
+		})
+	}
+	async allMenu(req, res, next) {
+		const shop_id = req.params.shop_id;
+		try {
+			const category_list = await MenuModel.find({ shop_id });
+			res.send({
+				status: 1,
+				category_list,
+			})
+		} catch (err) {
+			console.log('获取餐馆食品种类失败');
+			res.send({
+				status: 0,
+				type: 'ERROR_GET_DATA',
+				message: '获取数据失败'
+			})
+		}
+	}
+	async getMenuDetail(req, res, next) {
+		const menu_id = req.params.menu_id;
+		if (!menu_id || !Number(menu_id)) {
+			console.log('获取Menu详情参数ID错误');
+			res.send({
+				status: 0,
+				type: 'ERROR_PARAMS',
+				message: 'Menu ID参数错误',
+			})
+			return
+		}
+		try {
+			const menu = await MenuModel.findOne({ id: menu_id }, '-_id');
+			res.send(menu)
+		} catch (err) {
+			console.log('获取Menu详情失败', err);
+			res.send({
+				status: 0,
+				type: 'GET_DATA_ERROR',
+				message: '获取Menu详情失败'
+			})
+		}
+	}
+	
+	async getSpecfoods(fields, item_id) {
+		let specfoods = [], specifications = [];
+		if (fields.specs.length < 2) {
+			let food_id, sku_id;
+			try {
+				sku_id = await this.getId('sku_id');
+				food_id = await this.getId('food_id');
+			} catch (err) {
+				throw new Error('获取sku_id、food_id失败')
+			}
+			specfoods.push({
+				packing_fee: fields.specs[0].packing_fee,
+				price: fields.specs[0].price,
+				specs: [],
+				specs_name: fields.specs[0].specs,
+				name: fields.name,
+				item_id,
+				sku_id,
+				food_id,
+				restaurant_id: fields.restaurant_id,
+				recent_rating: (Math.random() * 5).toFixed(1),
+				recent_popularity: Math.ceil(Math.random() * 1000),
+			})
+		} else {
+			specifications.push({
+				values: [],
+				name: "规格"
+			})
+			for (let i = 0; i < fields.specs.length; i++) {
+				let food_id, sku_id;
+				try {
+					sku_id = await this.getId('sku_id');
+					food_id = await this.getId('food_id');
+				} catch (err) {
+					throw new Error('获取sku_id、food_id失败')
+				}
+				specfoods.push({
+					packing_fee: fields.specs[i].packing_fee,
+					price: fields.specs[i].price,
+					specs: [{
+						name: "规格",
+						value: fields.specs[i].specs
+					}],
+					specs_name: fields.specs[i].specs,
+					name: fields.name,
+					item_id,
+					sku_id,
+					food_id,
+					restaurant_id: fields.restaurant_id,
+					recent_rating: (Math.random() * 5).toFixed(1),
+					recent_popularity: Math.ceil(Math.random() * 1000),
+				})
+				specifications[0].values.push(fields.specs[i].specs);
+			}
+		}
+		return [specfoods, specifications]
 	}
 }
 

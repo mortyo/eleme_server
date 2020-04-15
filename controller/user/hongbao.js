@@ -18,7 +18,7 @@ class Hongbao extends BaseComponent {
 	async hongbaoHandle(req, res, type) {
 		const present_status = type == 'intime' ? 1 : 4;
 		const user_id = req.params.user_id;
-		const { limit = 0, offset = 0 } = req.query;
+		const { limit = 10, offset = 0 } = req.query;
 		try {
 			if (!user_id || !Number(user_id)) {
 				throw new Error('user_id参数错误')

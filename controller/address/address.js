@@ -65,7 +65,7 @@ class Address extends BaseComponent {
 				return
 			}
 			try {
-				const address_id = await this.getId('address_id');
+				const address_id = await this.getId('address_id'); //新增address_id
 				const newAddress = {
 					id: address_id,
 					address,

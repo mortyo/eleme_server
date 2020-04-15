@@ -5,9 +5,10 @@ import {ratingList, scores, tags} from '../../InitData/rate'
 const Schema = mongoose.Schema;
 
 const rateSchema = new Schema({
-	restaurant_id: Number,
+	shop_id: Number,
 	ratings: [
 		{
+			username: {type: String, default: "匿名用户"},
 			avatar: {type: String, default: ''},
 			highlights: [],
 			item_ratings: [
@@ -23,7 +24,6 @@ const rateSchema = new Schema({
 			rating_text: String,
 			tags: {type: Array, default: []},
 			time_spent_desc: String,
-			username: {type: String, default: "匿名用户"},
 		},
 	],
 	scores: {
@@ -35,20 +35,20 @@ const rateSchema = new Schema({
 		service_score: {type: Number, default: 0},
 	},
 	tags: [{
-		count: {type: Number, default: 0},
 		name: String,
+		count: {type: Number, default: 0},
 		unsatisfied: {type: Boolean, default: false},
 	}]
 })
 
-rateSchema.index({restaurant_id: 1});
+rateSchema.index({shop_id: 1});
 
-rateSchema.statics.initData = async function (restaurant_id){
+rateSchema.statics.initData = async function (shop_id){
 	try{
-		const data = await this.findOne({restaurant_id});
+		const data = await this.findOne({shop_id});
 		if (!data) {
 			const newRating = {
-				restaurant_id,
+				shop_id,
 				ratings: ratingList,
 				scores,
 				tags,
@@ -64,9 +64,9 @@ rateSchema.statics.initData = async function (restaurant_id){
 	}
 }
 
-rateSchema.statics.getData = async function (restaurant_id, type){
+rateSchema.statics.getData = async function (shop_id, type){
 	try{
-		const data = await this.findOne({restaurant_id}, '-_id');
+		const data = await this.findOne({shop_id}, '-_id');
 		if (!data) {
 			throw new Error('未找到当前餐馆的评论数据');
 		}else{

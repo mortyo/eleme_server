@@ -6,9 +6,9 @@ import paymentsData from '../../InitData/payments'
 const Schema = mongoose.Schema;
 
 const paymentsSchema = new Schema({
+	id: Number,
 	description: String,
 	disabled_reason: String,
-	id: Number,
 	is_online_payment: Boolean,
 	name: String,
 	promotion: [],
