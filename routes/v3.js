@@ -1,8 +1,8 @@
 'use strict';
 
 import express from 'express';
-import CityHandle from '../controller/address/cities';
-import SearchPlace from '../controller/address/search';
+import CityHandle from '../controller/position/cities';
+import SearchPlace from '../controller/position/search';
 
 const router = express.Router();
 

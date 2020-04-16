@@ -27,7 +27,7 @@ router.get('/food', Food.getFoods); //{ shop_id, limit = 20, offset = 0 } = req.
 router.get('/foods/count', Food.getFoodsCount); //req.query.shop_id;
 router.post('/updatefood', Check.checkAdmin, Food.updateFood);
 router.delete('/food/:food_id', Check.checkSuperAdmin, Food.deleteFood);
-
+//menu
 router.post('/addMenu', Check.checkAdmin, Food.addMenu);
 router.get('/allMenu/:shop_id', Food.allMenu);
 router.get('/menu/:menu_id', Food.getMenuDetail);
@@ -36,9 +36,9 @@ router.get('/getCategories', Category.getCategories);
 router.get('/delivery_modes', Category.getDelivery);
 router.get('/activity_attributes', Category.getActivity);
 //rating
-router.get('/Rating/:shop_id/ratings', Rating.getRatings)
-router.get('/Rating/:shop_id/scores', Rating.getScores)
-router.get('/Rating/:shop_id/tags', Rating.getTags)
+router.get('/Rate/:shop_id/ratings', Rating.getRatings)
+router.get('/Rate/:shop_id/scores', Rating.getScores)
+router.get('/Rate/:shop_id/tags', Rating.getTags)
 
 router.post('/carts/checkout', Carts.checkout);
 router.get('/carts/:cart_id/remarks', Remark.getRemarks);

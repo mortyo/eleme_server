@@ -1,12 +1,12 @@
 import formidable from 'formidable';
 import fs from 'fs';
-import gm from 'gm';
+// import gm from 'gm';
 import fetch from 'node-fetch';
 import path from 'path';
 import qiniu from 'qiniu';
 import Ids from '../models/ids';
-qiniu.conf.ACCESS_KEY = 'Ep714TDrVhrhZzV2VJJxDYgGHBAX-KmU1xV1SQdS';
-qiniu.conf.SECRET_KEY = 'XNIW2dNffPBdaAhvm9dadBlJ-H6yyCTIJLxNM_N6';
+qiniu.conf.ACCESS_KEY = '2Fthyndc1KKTBpk02I9CdeGW5-k3Z4BotT6GsmIU';
+qiniu.conf.SECRET_KEY = 'qE8vIySSzwWNo_GQN9FLdlDEt-emxPK89dXJJnvK';
 
 
 export default class BaseComponent {
@@ -79,8 +79,8 @@ export default class BaseComponent {
 	async uploadImg(req, res, next) {
 		const type = req.params.type;
 		try {
-			//const image_path = await this.qiniu(req, type);
-			const image_path = await this.getPath(req, res);
+			// const image_path = await this.qiniu(req, type); //图片存到七牛
+			const image_path = await this.getPath(req, res); //图片存到本地
 			res.send({
 				status: 1,
 				image_path,
@@ -94,7 +94,7 @@ export default class BaseComponent {
 			})
 		}
 	}
-	//获取图片路径
+	//保存图片到本地
 	async getPath(req, res) {
 		return new Promise((resolve, reject) => {
 			const form = formidable.IncomingForm();
@@ -109,7 +109,7 @@ export default class BaseComponent {
 					reject('获取图片id失败');
 				}
 				const hashName = (new Date().getTime() + Math.ceil(Math.random() * 10000)).toString(16) + img_id;
-				const extname = path.extname(files.file.name);
+				const extname = path.extname(files.file.name); //返回path路径文件扩展名
 				if (!['.jpg', '.jpeg', '.png'].includes(extname)) {
 					fs.unlinkSync(files.file.path);
 					res.send({
@@ -123,17 +123,19 @@ export default class BaseComponent {
 				const fullName = hashName + extname;
 				const repath = './public/img/' + fullName;
 				try {
-					fs.renameSync(files.file.path, repath);
-					gm(repath)
-						.resize(200, 200, "!")
-						.write(repath, async (err) => {
-							// if(err){
-							// 	console.log('裁切图片失败');
-							// 	reject('裁切图片失败');
-							// 	return
-							// }
-							resolve(fullName)
-						})
+					fs.renameSync(files.file.path, repath); //给文件重命名
+					resolve(fullName)
+					// gm(repath) //剪裁图片,需要安装gm客户端
+					// 	.resize(200, 200, "!")
+					// 	.write(repath, async (err) => {
+					// 		if(err){
+					// 			console.log(err)
+					// 			console.log('裁切图片失败');
+					// 			reject('裁切图片失败');
+					// 			return
+					// 		}
+							
+					// 	})
 				} catch (err) {
 					console.log('保存图片失败', err);
 					if (fs.existsSync(repath)) {
@@ -172,7 +174,7 @@ export default class BaseComponent {
 					resolve(qiniuImg)
 				} catch (err) {
 					console.log('保存至七牛失败', err);
-					fs.unlinkSync(files.file.path)
+					fs.unlinkSync(files.file.path) //fs.unlink('要删除文件的路径',回调函数)
 					reject('保存至七牛失败')
 				}
 			});

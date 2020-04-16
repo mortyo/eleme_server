@@ -1,7 +1,7 @@
 'use strict';
 
 import formidable from 'formidable';
-import AddressModel from '../../models/address/address';
+import AddressModel from '../../models/user/address';
 import BaseComponent from '../../prototype/baseComponent';
 
 class Address extends BaseComponent {
@@ -20,7 +20,7 @@ class Address extends BaseComponent {
 			return
 		}
 		try {
-			const addressList = await AddressModel.find({ user_id }, '-_id');
+			const addressList = await AddressModel.find({ user_id }, '-_id -__v');
 			res.send(addressList)
 		} catch (err) {
 			console.log('获取收获地址失败', err);
@@ -34,7 +34,7 @@ class Address extends BaseComponent {
 		const form = new formidable.IncomingForm();
 		form.parse(req, async (err, fields, files) => {
 			const user_id = req.params.user_id;
-			const { address, address_detail, geohash, name, phone, phone_bk, poi_type = 0, sex, tag, tag_type } = fields;
+			const { address, address_detail, geohash, name,sex, phone, phone_bk,tag} = fields;
 			try {
 				if (!user_id || !Number(user_id)) {
 					throw new Error('用户ID参数错误');
@@ -52,9 +52,7 @@ class Address extends BaseComponent {
 					throw new Error('性别错误');
 				} else if (!tag) {
 					throw new Error('标签错误');
-				} else if (!tag_type) {
-					throw new Error('标签类型错误');
-				}
+				} 
 			} catch (err) {
 				console.log(err.message);
 				res.send({
@@ -69,15 +67,14 @@ class Address extends BaseComponent {
 				const newAddress = {
 					id: address_id,
 					address,
-					phone,
-					phone_bk: phone_bk && phone_bk,
-					name,
-					st_geohash: geohash,
 					address_detail,
-					sex,
-					tag,
-					tag_type,
 					user_id,
+					name,
+					sex,
+					phone,
+					phone_bk,
+					geohash,
+					tag,
 				}
 				await AddressModel.create(newAddress);
 				res.send({

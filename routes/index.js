@@ -10,7 +10,7 @@ import v6 from './v6';
 module.exports = (app) => {
 	app.use('/v1', v1); //user
 	app.use('/v2', v2);	//shopping
-	app.use('/v3', v3);	//address
+	app.use('/v3', v3);	//position
 	app.use('/v4', v4);	//other
 	app.use('/v5', v5);	//admin
 	app.use('/v6', v6);	//statis

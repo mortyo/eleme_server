@@ -1,6 +1,6 @@
 'use strict';
 
-import Cities from '../../models/address/cities';
+import Cities from '../../models/position/cities';
 import AddressComponent from '../../prototype/addressComponent';
 import CityHandle from './cities';
 

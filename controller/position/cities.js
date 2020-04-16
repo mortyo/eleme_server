@@ -1,7 +1,7 @@
 'use strict';
 
 import pinyin from "pinyin";
-import Cities from '../../models/address/cities';
+import Cities from '../../models/position/cities';
 import AddressComponent from '../../prototype/addressComponent';
 
 class CityHandle extends AddressComponent {

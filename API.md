@@ -1,7 +1,7 @@
 # 接口分类
 ### v1.user
 ### v2.shopping
-### v3.address
+### v3.position
 ### v4.other 
 ### v5.admin
 ### v6.statis
@@ -12,6 +12,73 @@
 baseUrl: http://localhost:8001
 
 ```
+# 接口列表：
+
+### 1、用户登录
+
+{ username,password,captcha_code }
+
+```
+POST http://localhost:8001/v1/login
+```
+
+### 2、用户信息（通过query）
+
+query user_id
+
+```
+GET http://localhost:8001/v1/user
+```
+
+### 3、用户信息（通过params）
+
+params user_id
+
+```
+GET http://localhost:8001/v1/user/:user_id
+```
+
+### 4、退出登录
+
+```
+GET http://localhost:8001/v1/signout
+```
+
+### 5、修改用户密码
+
+{ username, oldpassWord, newpassword, confirmpassword, captcha_code }
+
+```
+POST http://localhost:8001/v1/changepassword
+```
+
+### 6、修改用户头像
+
+params user_id
+
+```
+POST http://localhost:8001/v1/users/:user_id/avatar
+```
+
+### 7、获取所有用户
+
+query { limit,offset }
+
+```
+GET http://localhost:8001/v1/users/list
+```
+
+
+
+
+
+
+
+
+
+
+
+
 
 ## 目录：
 

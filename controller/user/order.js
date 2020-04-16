@@ -3,7 +3,7 @@
 import formidable from 'formidable'; //parsing form data, especially file uploads
 import dtime from 'time-formater';
 import OrderModel from '../../models/user/order';
-import AddressModel from '../../models/address/address';
+import AddressModel from '../../models/user/address';
 import CartModel from '../../models/shopping/cart';
 import BaseComponent from '../../prototype/baseComponent';
 
