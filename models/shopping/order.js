@@ -21,7 +21,7 @@ const orderSchema = new Schema({
 			quantity: { type: Number, default: 1 },
 		},
 		extra: [],
-		group: [
+		groups: [
 			[
 				{
 					attrs: [],

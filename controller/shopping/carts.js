@@ -19,17 +19,17 @@ class Carts extends AddressComponent {
 		this.checkout = this.checkout.bind(this);
 	}
 	async checkout(req, res, next) {
-		const UID = req.session.UID;
+		const user_id = req.session.user_id;
 		const form = new formidable.IncomingForm();
 		form.parse(req, async (err, fields, files) => {
-			const { come_from, geohash, entities = [], restaurant_id } = fields;
+			const { geohash, entities, shop_id } = fields;
 			try {
 				if (!(entities instanceof Array) || !entities.length) {
 					throw new Error('entities参数错误')
 				} else if (!(entities[0] instanceof Array) || !entities[0].length) {
 					throw new Error('entities参数错误')
-				} else if (!restaurant_id) {
-					throw new Error('restaurant_id参数错误')
+				} else if (!shop_id) {
+					throw new Error('shop_id参数错误')
 				}
 			} catch (err) {
 				console.log(err);
@@ -42,15 +42,15 @@ class Carts extends AddressComponent {
 			}
 			let payments; //付款方式
 			let cart_id; //购物车id
-			let restaurant; //餐馆详情
+			let shop; //餐馆详情
 			let deliver_time; //配送时间
 			let delivery_reach_time; //到达时间
 			let from = geohash.split(',')[0] + ',' + geohash.split(',')[1];
 			try {
 				payments = await PaymentsModel.find({}, '-_id');
 				cart_id = await this.getId('cart_id');
-				restaurant = await ShopModel.findOne({ id: restaurant_id });
-				const to = restaurant.latitude + ',' + restaurant.longitude;
+				shop = await ShopModel.findOne({ id: shop_id });
+				const to = shop.latitude + ',' + shop.longitude;
 				deliver_time = await this.getDistance(from, to, 'tiemvalue');
 				let time = new Date().getTime() + deliver_time * 1000;
 				let hour = ('0' + new Date(time).getHours()).substr(-2);
@@ -83,7 +83,7 @@ class Carts extends AddressComponent {
 				is_available: false,
 				status_text: "商家不支持开发票",
 			};
-			restaurant.supports.forEach(item => {
+			shop.supports.forEach(item => {
 				if (item.icon_name == '票') {
 					invoice = {
 						is_available: true,
@@ -98,14 +98,14 @@ class Carts extends AddressComponent {
 					groups: entities,
 					extra: this.extra,
 					deliver_amount,
-					is_deliver_by_fengniao: !!restaurant.delivery_mode,
+					is_deliver_by_fengniao: !!shop.delivery_mode,
 					original_total: total,
-					phone: restaurant.phone,
-					restaurant_id,
-					restaurant_info: restaurant,
-					restaurant_minimum_order_amount: restaurant.float_minimum_order_amount,
+					phone: shop.phone,
+					shop_id,
+					shop_info: shop,
+					shop_minimum_order_amount: shop.float_minimum_order_amount,
 					total,
-					user_id: UID,
+					user_id,
 				},
 				delivery_reach_time,
 				invoice,

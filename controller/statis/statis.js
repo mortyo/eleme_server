@@ -3,7 +3,7 @@
 import StatisModel from '../../models/statis/statis'
 import UserInfoModel from '../../models/user/userInfo'
 import AdminModel from '../../models/admin/admin'
-import OrderModel from '../../models/user/order'
+import OrderModel from '../../models/shopping/order'
 
 class Statis {
 	constructor() {

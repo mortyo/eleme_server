@@ -5,32 +5,42 @@ import Category from '../controller/shopping/category';
 import Entry from '../controller/shopping/entry';
 import Shop from '../controller/shopping/shop';
 import Food from '../controller/shopping/food';
-import Rating from '../controller/shopping/rating';
 import Carts from '../controller/shopping/carts';
 import Remark from '../controller/shopping/remark';
+import Order from '../controller/shopping/order';
+import Rating from '../controller/shopping/rating';
 import Check from '../middlewares/check';
 
 const router = express.Router();
-//entry
-router.get('/index_entry', Entry.getEntry);  //msite导航栏
 //shop
 router.post('/addshop', Check.checkAdmin, Shop.addShop);
 router.get('/shops', Shop.getShops);
-router.get('/shops/search', Shop.searchShop);
 router.get('/shop/:shop_id', Shop.getShopDetail);
-router.get('/shops/count', Shop.getShopCount);
 router.post('/updateshop', Check.checkAdmin, Shop.updateShop);
-router.delete('/shop/:shop_id', Check.checkSuperAdmin, Shop.deleteShop);
+router.get('/shops/search', Shop.searchShop);
+router.get('/shops/count', Shop.getShopCount);
+router.delete('/shop/:shop_id', Shop.deleteShop);
 //food
-router.post('/addfood', Check.checkAdmin, Food.addFood);
-router.get('/food', Food.getFoods); //{ shop_id, limit = 20, offset = 0 } = req.query;
-router.get('/foods/count', Food.getFoodsCount); //req.query.shop_id;
+router.post('/addfood',  Food.addFood);
+router.get('/food', Food.getFoods); 
+router.get('/foods/count', Food.getFoodsCount); 
 router.post('/updatefood', Check.checkAdmin, Food.updateFood);
 router.delete('/food/:food_id', Check.checkSuperAdmin, Food.deleteFood);
 //menu
 router.post('/addMenu', Check.checkAdmin, Food.addMenu);
 router.get('/allMenu/:shop_id', Food.allMenu);
 router.get('/menu/:menu_id', Food.getMenuDetail);
+//cart
+router.post('/cart/checkout', Carts.checkout);
+router.get('/cart/:cart_id/remarks', Remark.getRemarks);
+//order
+router.post('/user/:user_id/cart/:cart_id/order', Order.postOrder);
+router.get('/user/:user_id/orders', Order.getOrders)
+router.get('/user/:user_id/orders/:order_id/snapshot', Order.getDetail)
+router.get('/orders', Order.getAllOrders)
+router.get('/orders/count', Order.getOrdersCount)
+//entry
+router.get('/index_entry', Entry.getEntry);  //msite导航栏
 //category
 router.get('/getCategories', Category.getCategories);
 router.get('/delivery_modes', Category.getDelivery);
@@ -39,8 +49,5 @@ router.get('/activity_attributes', Category.getActivity);
 router.get('/Rate/:shop_id/ratings', Rating.getRatings)
 router.get('/Rate/:shop_id/scores', Rating.getScores)
 router.get('/Rate/:shop_id/tags', Rating.getTags)
-
-router.post('/carts/checkout', Carts.checkout);
-router.get('/carts/:cart_id/remarks', Remark.getRemarks);
 
 export default router

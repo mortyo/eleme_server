@@ -18,7 +18,7 @@ class Remark extends BaseComponent {
 			return
 		}
 		try {
-			const remarks = await RemarkModel.findOne({}, '-_id');
+			const remarks = await RemarkModel.findOne({}, '-_id -__v');
 			res.send(remarks);
 		} catch (err) {
 			console.log('获取备注数据失败', err);

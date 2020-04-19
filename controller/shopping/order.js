@@ -2,7 +2,7 @@
 
 import formidable from 'formidable'; //parsing form data, especially file uploads
 import dtime from 'time-formater';
-import OrderModel from '../../models/user/order';
+import OrderModel from '../../models/shopping/order';
 import AddressModel from '../../models/user/address';
 import CartModel from '../../models/shopping/cart';
 import BaseComponent from '../../prototype/baseComponent';
@@ -24,13 +24,9 @@ class Order extends BaseComponent {
 				return
 			}
 			const { user_id, cart_id } = req.params;
-			const { address_id, come_from = 'mobile_web', deliver_time = '', description, entities, geohash, paymethod_id = 1 } = fields;
+			const { address_id } = fields;
 			try {
-				if (!(entities instanceof Array) || !entities.length) {
-					throw new Error('entities参数错误')
-				} else if (!(entities[0] instanceof Array) || !entities[0].length) {
-					throw new Error('entities参数错误')
-				} else if (!address_id) {
+				if (!address_id) {
 					throw new Error('address_id参数错误')
 				} else if (!user_id || !Number(user_id)) {
 					throw new Error('user_id参数错误')
@@ -65,7 +61,7 @@ class Order extends BaseComponent {
 			const deliver_fee = { price: cartDetail.cart.deliver_amount };
 			const orderObj = {
 				basket: {
-					group: entities,
+					groups: cartDetail.cart.groups,
 					packing_fee: {
 						name: cartDetail.cart.extra[0].name,
 						price: cartDetail.cart.extra[0].price,
@@ -74,8 +70,8 @@ class Order extends BaseComponent {
 					deliver_fee,
 				},
 				restaurant_id: cartDetail.cart.restaurant_id,
-				restaurant_image_url: cartDetail.cart.restaurant_info.image_path,
-				restaurant_name: cartDetail.cart.restaurant_info.name,
+				// restaurant_image_url: cartDetail.cart.restaurant_info.image_path,
+				// restaurant_name: cartDetail.cart.restaurant_info.name,
 				formatted_created_at: dtime().format('YYYY-MM-DD HH:mm'),
 				order_time: new Date().getTime(),
 				time_pass: 900,
@@ -86,7 +82,6 @@ class Order extends BaseComponent {
 					title: '',
 				},
 				total_amount: cartDetail.cart.total,
-				total_quantity: entities[0].length,
 				unique_id: order_id,
 				id: order_id,
 				user_id,

@@ -11,8 +11,6 @@ const idsSchema = new mongoose.Schema({
 	cart_id: Number,
 	category_id: Number,
 	img_id: Number,
-	item_id: Number,
-	sku_id: Number, 
 	admin_id: Number,
 	statis_id: Number,
 });
@@ -30,8 +28,6 @@ Ids.findOne((err, data) => {
 			cart_id: 0,
 			category_id: 0,
 			img_id: 0,
-			item_id: 0,
-			sku_id: 0, 
 			admin_id: 0,
 			statis_id: 0,
 		});

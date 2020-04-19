@@ -14,7 +14,6 @@ class Shop extends AddressComponent {
 		this.getShops = this.getShops.bind(this);
 		this.searchShop = this.searchShop.bind(this);
 	}
-	//添加商铺
 	async addShop(req, res, next) {
 		let shop_id;
 		try {
@@ -63,35 +62,35 @@ class Shop extends AddressComponent {
 			}
 			const opening_hours = fields.startTime && fields.endTime ? fields.startTime + '/' + fields.endTime : "8:30/20:30";
 			const newShop = {
+				id: shop_id,
 				name: fields.name,
 				address: fields.address,
 				description: fields.description || '',
 				float_delivery_fee: fields.float_delivery_fee || 0,
 				float_minimum_order_amount: fields.float_minimum_order_amount || 0,
-				id: shop_id,
 				is_premium: fields.is_premium || false,
 				is_new: fields.new || false,
 				latitude: fields.latitude,
 				longitude: fields.longitude,
-				location: [fields.longitude, fields.latitude],
+				location: [fields.latitude,fields.longitude],
 				opening_hours: [opening_hours],
 				phone: fields.phone,
 				promotion_info: fields.promotion_info || "欢迎光临，用餐高峰请提前下单，谢谢",
-				rating: (4 + Math.random()).toFixed(1),
-				rating_count: Math.ceil(Math.random() * 1000),
-				recent_order_num: Math.ceil(Math.random() * 1000),
-				status: Math.round(Math.random()),
-				image_path: fields.image_path,
+				image_path: fields.image_path || 'default.jpg',
 				category: fields.category,
 				piecewise_agent_fee: {
 					tips: "配送费约¥" + (fields.float_delivery_fee || 0),
 				},
-				activities: [],
-				supports: [],
 				license: {
 					business_license_image: fields.business_license_image || '',
 					catering_service_license_image: fields.catering_service_license_image || '',
 				},
+				rating: (4 + Math.random()).toFixed(1),
+				rating_count: Math.ceil(Math.random() * 1000),
+				recent_order_num: Math.ceil(Math.random() * 1000),
+				status: Math.round(Math.random()),
+				activities: [],
+				supports: [],
 				identification: {
 					company_name: "",
 					identificate_agency: "",
@@ -116,7 +115,7 @@ class Shop extends AddressComponent {
 					}
 				})
 			}
-			//商店支持的活动
+			// 商店支持的活动
 			fields.activities.forEach((item, index) => {
 				switch (item.icon_name) {
 					case '减':
@@ -187,7 +186,6 @@ class Shop extends AddressComponent {
 			}
 		})
 	}
-	//获取餐馆列表
 	async getShops(req, res, next) {
 		const {
 			latitude,
@@ -302,54 +300,6 @@ class Shop extends AddressComponent {
 			})
 		}
 	}
-	//搜索餐馆
-	async searchShop(req, res, next) {
-		const { geohash, keyword } = req.query;
-		try {
-			if (!geohash || geohash.indexOf(',') == -1) { //indexOf() 方法可返回某个指定的字符串值在字符串中首次出现的位置
-				throw new Error('经纬度参数错误');
-			} else if (!keyword) {
-				throw new Error('关键词参数错误');
-			}
-		} catch (err) {
-			console.log('搜索商铺参数错误');
-			res.send({
-				status: 0,
-				type: 'ERROR_PARAMS',
-				message: err.message,
-			})
-			return
-		}
-
-		try {
-			const shops = await ShopModel.find({ name: eval('/' + keyword + '/gi') }, '-_id').limit(50);
-			// if (shops.length) {
-				// const [latitude, longitude] = geohash.split(',');
-				// const from = latitude + ',' + longitude;
-				// const from = geohash;
-				// let to = '222,111';
-				//获取百度地图测局所需经度纬度
-				// shops.forEach((item, index) => {
-				// 	const slpitStr = (index == shops.length - 1) ? '' : '|';
-				// 	to += item.latitude + ',' + item.longitude + slpitStr;
-				// })
-				//获取距离信息，并合并到数据中
-				// const distance_duration = await this.getDistance(from, to)
-				// shops.map((item, index) => {
-				// 	return Object.assign(item, distance_duration[index])
-				// })
-			// }
-			res.send(shops);
-		} catch (err) {
-			console.log('搜索餐馆数据失败');
-			res.send({
-				status: 0,
-				type: 'ERROR_DATA',
-				message: '搜索餐馆数据失败'
-			})
-		}
-	}
-	//获取餐馆详情
 	async getShopDetail(req, res, next) {
 		const shop_id = req.params.shop_id;
 		if (!shop_id || !Number(shop_id)) {
@@ -370,22 +320,6 @@ class Shop extends AddressComponent {
 				status: 0,
 				type: 'GET_DATA_ERROR',
 				message: '获取餐馆详情失败'
-			})
-		}
-	}
-	async getShopCount(req, res, next) {
-		try {
-			const count = await ShopModel.count();
-			res.send({
-				status: 1,
-				count,
-			})
-		} catch (err) {
-			console.log('获取餐馆数量失败', err);
-			res.send({
-				status: 0,
-				type: 'ERROR_TO_GET_COUNT',
-				message: '获取餐馆数量失败'
 			})
 		}
 	}
@@ -443,6 +377,69 @@ class Shop extends AddressComponent {
 				})
 			}
 		})
+	}
+	async searchShop(req, res, next) {
+		const { geohash, keyword } = req.query;
+		try {
+			if (!geohash || geohash.indexOf(',') == -1) { //indexOf() 方法可返回某个指定的字符串值在字符串中首次出现的位置
+				throw new Error('经纬度参数错误');
+			} else if (!keyword) {
+				throw new Error('关键词参数错误');
+			}
+		} catch (err) {
+			console.log('搜索商铺参数错误');
+			res.send({
+				status: 0,
+				type: 'ERROR_PARAMS',
+				message: err.message,
+			})
+			return
+		}
+
+		try {
+			const shops = await ShopModel.find({ name: eval('/' + keyword + '/gi') }, '-_id').limit(50);
+			//计算距离
+			// if (shops.length) {
+			// 	const [latitude, longitude] = geohash.split(',');
+			// 	const from = latitude + ',' + longitude;
+			// 	const from = geohash;
+			// 	let to = '20,100';
+			// 	//获取百度地图测局所需经度纬度
+			// 	shops.forEach((item, index) => {
+			// 		const slpitStr = (index == shops.length - 1) ? '' : '|';
+			// 		to += item.latitude + ',' + item.longitude + slpitStr;
+			// 	})
+			// 	//获取距离信息，并合并到数据中
+			// 	const distance_duration = await this.getDistance(from, to)
+			// 	shops.map((item, index) => {
+			// 		return Object.assign(item, distance_duration[index])
+			// 	})
+			// }
+			res.send(shops);
+		} catch (err) {
+			console.log('搜索餐馆数据失败');
+			res.send({
+				status: 0,
+				type: 'ERROR_DATA',
+				message: '搜索餐馆数据失败'
+			})
+		}
+	}
+	async getShopCount(req, res, next) {
+		try {
+			const count = await ShopModel.count();
+			res.send({
+				status: 1,
+				count,
+			})
+		} catch (err) {
+			console.log('获取餐馆数量失败', err);
+			res.send({
+				status: 0,
+				type: 'ERROR_TO_GET_COUNT',
+				message: '获取餐馆数量失败'
+			})
+		}
 	}
 	async deleteShop(req, res, next) {
 		const shop_id = req.params.shop_id;
