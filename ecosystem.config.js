@@ -22,8 +22,8 @@ module.exports = {
   deploy: {
     production: {
       user: 'root',
-      host: ['139.224.234.213'],
-      port: '22',
+      host: ['47.113.110.19'],
+      port: '80',
       ref : 'origin/master',
       repo: 'git@github.com:mortyo/eleme.git',
       path: '/root/mygit/eleme',

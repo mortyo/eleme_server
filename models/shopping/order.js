@@ -5,6 +5,9 @@ import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const orderSchema = new Schema({
+	id: Number,
+	user_id: Number,
+	address_id: Number,
 	basket: {
 		abandoned_extra: [
 			{
@@ -41,10 +44,14 @@ const orderSchema = new Schema({
 		},
 		pindan_map: []
 	},
+	shop_id: Number,
+	shop_image_hash: String,
+	shop_image_url: String,
+	shop_name: String,
+	shop_type: { type: Number, default: 0 },
 	formatted_created_at: String,
 	order_time: Number,
 	time_pass: Number,
-	id: Number,
 	is_brand: { type: Number, default: 0 },
 	is_deletable: { type: Number, default: 1 },
 	is_new_pay: { type: Number, default: 1 },
@@ -57,11 +64,6 @@ const orderSchema = new Schema({
 	pay_remain_seconds: { type: Number, default: 0 },
 	rated_point: { type: Number, default: 0 },
 	remind_reply_count: { type: Number, default: 0 },
-	restaurant_id: Number,
-	restaurant_image_hash: String,
-	restaurant_image_url: String,
-	restaurant_name: String,
-	restaurant_type: { type: Number, default: 0 },
 	status_bar: {
 		color: String,
 		image_type: String,
@@ -79,9 +81,6 @@ const orderSchema = new Schema({
 	top_show: { type: Number, default: 0 },
 	total_amount: Number,
 	total_quantity: Number,
-	unique_id: Number,
-	user_id: Number,
-	address_id: Number,
 })
 
 orderSchema.index({ id: 1 });

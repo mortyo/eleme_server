@@ -60,6 +60,9 @@ class Order extends BaseComponent {
 			}
 			const deliver_fee = { price: cartDetail.cart.deliver_amount };
 			const orderObj = {
+				id: order_id,
+				user_id,
+				address_id,
 				basket: {
 					groups: cartDetail.cart.groups,
 					packing_fee: {
@@ -69,9 +72,9 @@ class Order extends BaseComponent {
 					},
 					deliver_fee,
 				},
-				restaurant_id: cartDetail.cart.restaurant_id,
-				// restaurant_image_url: cartDetail.cart.restaurant_info.image_path,
-				// restaurant_name: cartDetail.cart.restaurant_info.name,
+				shop_id: cartDetail.cart.restaurant_id,
+				shop_image_url: cartDetail.cart.shop_info.image_path,
+				shop_name: cartDetail.cart.shop_info.name,
 				formatted_created_at: dtime().format('YYYY-MM-DD HH:mm'),
 				order_time: new Date().getTime(),
 				time_pass: 900,
@@ -82,10 +85,6 @@ class Order extends BaseComponent {
 					title: '',
 				},
 				total_amount: cartDetail.cart.total,
-				unique_id: order_id,
-				id: order_id,
-				user_id,
-				address_id,
 			}
 			try {
 				await OrderModel.create(orderObj);

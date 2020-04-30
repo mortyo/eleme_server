@@ -21,14 +21,14 @@ router.get('/shops/search', Shop.searchShop);
 router.get('/shops/count', Shop.getShopCount);
 router.delete('/shop/:shop_id', Shop.deleteShop);
 //food
-router.post('/addfood',  Food.addFood);
+router.post('/addfood',Food.addFood);
 router.get('/food', Food.getFoods); 
 router.get('/foods/count', Food.getFoodsCount); 
 router.post('/updatefood', Check.checkAdmin, Food.updateFood);
 router.delete('/food/:food_id', Check.checkSuperAdmin, Food.deleteFood);
 //menu
-router.post('/addMenu', Check.checkAdmin, Food.addMenu);
-router.get('/allMenu/:shop_id', Food.allMenu);
+router.post('/addmenu', Check.checkAdmin, Food.addMenu);
+router.get('/shopmenu/:shop_id', Food.allMenu);
 router.get('/menu/:menu_id', Food.getMenuDetail);
 //cart
 router.post('/cart/checkout', Carts.checkout);
@@ -36,7 +36,7 @@ router.get('/cart/:cart_id/remarks', Remark.getRemarks);
 //order
 router.post('/user/:user_id/cart/:cart_id/order', Order.postOrder);
 router.get('/user/:user_id/orders', Order.getOrders)
-router.get('/user/:user_id/orders/:order_id/snapshot', Order.getDetail)
+router.get('/user/:user_id/order/:order_id', Order.getDetail)
 router.get('/orders', Order.getAllOrders)
 router.get('/orders/count', Order.getOrdersCount)
 //entry
