@@ -1,6 +1,6 @@
 module.exports = {
   apps : [{
-    name: 'node-elm',
+    name: 'eleme_server',
     script: 'index.js',
     instances: 1 ,
     autorestart: true,
@@ -21,11 +21,11 @@ module.exports = {
   deploy: {
     production: {
       user: 'root',
-      host: ['139.224.234.213'],
+      host: ['47.113.110.19'],
       port: '22',
       ref : 'origin/master',
-      repo: 'git@github.com:bailicangdu/node-elm.git',
-      path: '/root/mygit/node-elm',
+      repo: 'git@github.com:mortyo/eleme_server.git',
+      path: '/root/mygit/eleme_server',
       'ssh_options': 'StrictHostKeyChecking=no',
       'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env production',
     }
