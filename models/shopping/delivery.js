@@ -6,8 +6,8 @@ import deliveryData from '../../InitData/delivery'
 const Schema = mongoose.Schema;
 
 const DeliverySchema = new Schema({
-	id: Number,
 	color: String,
+	id: Number,
 	is_solid: Boolean,
 	text: String
 })

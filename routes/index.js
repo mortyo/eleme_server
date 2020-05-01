@@ -1,17 +1,34 @@
 'use strict';
 
-import v1 from './v1';
-import v2 from './v2';
-import v3 from './v3';
-import v4 from './v4';
-import v5 from './v5';
-import v6 from './v6';
+import v1 from './v1'
+import v2 from './v2'
+import v3 from './v3'
+import v4 from './v4'
+import ugc from './ugc'
+import bos from './bos'
+import eus from './eus'
+import admin from './admin'
+import payapi from './payapi'
+import statis from './statis'
+import member from './member'
+import shopping from './shopping'
+import promotion from './promotion'
 
-module.exports = (app) => {
-	app.use('/v1', v1); //user
-	app.use('/v2', v2);	//shopping
-	app.use('/v3', v3);	//position
-	app.use('/v4', v4);	//other
-	app.use('/v5', v5);	//admin
-	app.use('/v6', v6);	//statis
+export default app => {
+	// app.get('/', (req, res, next) => {
+	// 	res.redirect('/');
+	// });
+	app.use('/v1', v1);
+	app.use('/v2', v2);
+	app.use('/v3', v3);
+	app.use('/v4', v4);
+	app.use('/ugc', ugc);
+	app.use('/bos', bos);
+	app.use('/eus', eus);
+	app.use('/admin', admin);
+	app.use('/payapi', payapi);
+	app.use('/member', member);
+	app.use('/statis', statis);
+	app.use('/shopping', shopping);
+	app.use('/promotion', promotion);
 }

@@ -1,8 +1,7 @@
-// pm2配置文件
 module.exports = {
   apps : [{
-    name: 'eleme',
-    script: 'app.js',
+    name: 'node-elm',
+    script: 'index.js',
     instances: 1 ,
     autorestart: true,
     watch: false,
@@ -22,11 +21,11 @@ module.exports = {
   deploy: {
     production: {
       user: 'root',
-      host: ['47.113.110.19'],
-      port: '80',
+      host: ['139.224.234.213'],
+      port: '22',
       ref : 'origin/master',
-      repo: 'git@github.com:mortyo/eleme.git',
-      path: '/root/mygit/eleme',
+      repo: 'git@github.com:bailicangdu/node-elm.git',
+      path: '/root/mygit/node-elm',
       'ssh_options': 'StrictHostKeyChecking=no',
       'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env production',
     }
