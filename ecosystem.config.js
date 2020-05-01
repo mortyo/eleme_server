@@ -25,7 +25,7 @@ module.exports = {
       port: '22',
       ref : 'origin/master',
       repo: 'git@github.com:mortyo/eleme_server.git',
-      path: '/root/mygit/eleme_server',
+      path: '/root/eleme_server',
       'ssh_options': 'StrictHostKeyChecking=no',
       'post-deploy': 'npm install && pm2 reload ecosystem.config.js --env production',
     }
