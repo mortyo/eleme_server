@@ -25,7 +25,7 @@ const foodSchema = new Schema({
 	image_path: String,
 	limitation: Schema.Types.Mixed,
 	activity: Schema.Types.Mixed,
-	specfoods: [{
+	specs: [{
 		specs_name: String,
 		price: {type: Number, default: 0},
 		original_price: {type: Number, default: 0},

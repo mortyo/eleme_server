@@ -22,7 +22,7 @@ router.get('/shops/count', Shop.getShopCount);
 router.delete('/shop/:shop_id', Shop.deleteShop);
 //food
 router.post('/addfood',Food.addFood);
-router.get('/food', Food.getFoods); 
+router.get('/foods', Food.getFoods); 
 router.get('/foods/count', Food.getFoodsCount); 
 router.post('/updatefood', Check.checkAdmin, Food.updateFood);
 router.delete('/food/:food_id', Check.checkSuperAdmin, Food.deleteFood);
@@ -42,12 +42,13 @@ router.get('/orders/count', Order.getOrdersCount)
 //entry
 router.get('/index_entry', Entry.getEntry);  //msite导航栏
 //category
+router.post('/addCategory', Category.addCategory)
 router.get('/getCategories', Category.getCategories);
 router.get('/delivery_modes', Category.getDelivery);
 router.get('/activity_attributes', Category.getActivity);
 //rating
-router.get('/Rate/:shop_id/ratings', Rating.getRatings)
-router.get('/Rate/:shop_id/scores', Rating.getScores)
-router.get('/Rate/:shop_id/tags', Rating.getTags)
+router.get('/shop/:shop_id/ratings', Rating.getRatings)
+router.get('/shop/:shop_id/ratings/scores', Rating.getScores)
+router.get('/shop/:shop_id/ratings/tags', Rating.getTags)
 
 export default router

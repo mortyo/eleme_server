@@ -25,46 +25,46 @@ class User extends AddressComponent {
 		return md5.update(password).digest('base64');
 	}
 	async login(req, res, next) {
-		// const cap = req.cookies.cap;
-		// if (!cap) {
-		// 	console.log('验证码失效')
-		// 	res.send({
-		// 		status: 0,
-		// 		type: 'ERROR_CAPTCHA',
-		// 		message: '验证码失效',
-		// 	})
-		// 	return
-		// }
+		const cap = req.cookies.cap;
+		if (!cap) {
+			console.log('验证码失效')
+			res.send({
+				status: 0,
+				type: 'ERROR_CAPTCHA',
+				message: '验证码失效',
+			})
+			return
+		}
 		const form = new formidable.IncomingForm();
 		//parse()会转换POST请求中所包含的表单数据并放到fields对象中，callback会包含所有字段域和文件信息
 		form.parse(req, async (err, fields, files) => {
 			//fields： { username: '****', password: '****', captcha_code: '****' }
 			const { username, password, captcha_code } = fields;
-			// try {
-			// 	if (!username) {
-			// 		throw new Error('用户名参数错误');
-			// 	} else if (!password) {
-			// 		throw new Error('密码参数错误');
-			// 	} else if (!captcha_code) {
-			// 		throw new Error('验证码参数错误');
-			// 	}
-			// } catch (err) {
-			// 	console.log('登陆参数错误', err);
-			// 	res.send({
-			// 		status: 0,
-			// 		type: 'ERROR_QUERY',
-			// 		message: err.message,
-			// 	})
-			// 	return
-			// }
-			// if (cap.toString() !== captcha_code.toString()) { //cap是cookie里的验证码，captcha_code是请求里的验证码
-			// 	res.send({
-			// 		status: 0,
-			// 		type: 'ERROR_CAPTCHA',
-			// 		message: '验证码不正确',
-			// 	})
-			// 	return
-			// }
+			try {
+				if (!username) {
+					throw new Error('用户名参数错误');
+				} else if (!password) {
+					throw new Error('密码参数错误');
+				} else if (!captcha_code) {
+					throw new Error('验证码参数错误');
+				}
+			} catch (err) {
+				console.log('登陆参数错误', err);
+				res.send({
+					status: 0,
+					type: 'ERROR_QUERY',
+					message: err.message,
+				})
+				return
+			}
+			if (cap.toString() !== captcha_code.toString()) { //cap是cookie里的验证码，captcha_code是请求里的验证码
+				res.send({
+					status: 0,
+					type: 'ERROR_CAPTCHA',
+					message: '验证码不正确',
+				})
+				return
+			}
 			const newpassword = this.encryption(password);
 			try {
 				//查找用户，如果，用户为空，创建一个新的用户
@@ -161,50 +161,50 @@ class User extends AddressComponent {
 		})
 	}
 	async changePassword(req, res, next) {
-		// const cap = req.cookies.cap;
-		// if (!cap) {
-		// 	console.log('验证码失效')
-		// 	res.send({
-		// 		status: 0,
-		// 		type: 'ERROR_CAPTCHA',
-		// 		message: '验证码失效',
-		// 	})
-		// 	return
-		// }
+		const cap = req.cookies.cap;
+		if (!cap) {
+			console.log('验证码失效')
+			res.send({
+				status: 0,
+				type: 'ERROR_CAPTCHA',
+				message: '验证码失效',
+			})
+			return
+		}
 		const form = new formidable.IncomingForm();
 		form.parse(req, async (err, fields, files) => {
 			const { username, oldpassword, newpassword, confirmpassword, captcha_code } = fields;
-			// try {
-			// 	if (!username) {
-			// 		throw new Error('用户名参数错误');
-			// 	} else if (!oldpassword) {
-			// 		throw new Error('必须添加旧密码');
-			// 	} else if (!newpassword) {
-			// 		throw new Error('必须填写新密码');
-			// 	} else if (!confirmpassword) {
-			// 		throw new Error('必须填写确认密码');
-			// 	} else if (newpassword !== confirmpassword) {
-			// 		throw new Error('两次密码不一致');
-			// 	} else if (!captcha_code) {
-			// 		throw new Error('请填写验证码');
-			// 	}
-			// } catch (err) {
-			// 	console.log('修改密码参数错误', err);
-			// 	res.send({
-			// 		status: 0,
-			// 		type: 'ERROR_QUERY',
-			// 		message: err.message,
-			// 	})
-			// 	return
-			// }
-			// if (cap.toString() !== captcha_code.toString()) {
-			// 	res.send({
-			// 		status: 0,
-			// 		type: 'ERROR_CAPTCHA',
-			// 		message: '验证码不正确',
-			// 	})
-			// 	return
-			// }
+			try {
+				if (!username) {
+					throw new Error('用户名参数错误');
+				} else if (!oldpassword) {
+					throw new Error('必须添加旧密码');
+				} else if (!newpassword) {
+					throw new Error('必须填写新密码');
+				} else if (!confirmpassword) {
+					throw new Error('必须填写确认密码');
+				} else if (newpassword !== confirmpassword) {
+					throw new Error('两次密码不一致');
+				} else if (!captcha_code) {
+					throw new Error('请填写验证码');
+				}
+			} catch (err) {
+				console.log('修改密码参数错误', err);
+				res.send({
+					status: 0,
+					type: 'ERROR_QUERY',
+					message: err.message,
+				})
+				return
+			}
+			if (cap.toString() !== captcha_code.toString()) {
+				res.send({
+					status: 0,
+					type: 'ERROR_CAPTCHA',
+					message: '验证码不正确',
+				})
+				return
+			}
 			const md5password = this.encryption(oldpassword);
 			try {
 				const user = await UserModel.findOne({ username });

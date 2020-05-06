@@ -110,7 +110,7 @@ export default class BaseComponent {
 				}
 				const hashName = (new Date().getTime() + Math.ceil(Math.random() * 10000)).toString(16) + img_id;
 				const extname = path.extname(files.file.name); //返回path路径文件扩展名
-				if (!['.jpg', '.jpeg', '.png'].includes(extname)) {
+				if (!['.jpg', '.jpeg', '.png','.JPG','JPEG','PNG'].includes(extname)) {
 					fs.unlinkSync(files.file.path);
 					res.send({
 						status: 0,

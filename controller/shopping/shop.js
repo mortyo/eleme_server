@@ -399,22 +399,22 @@ class Shop extends AddressComponent {
 		try {
 			const shops = await ShopModel.find({ name: eval('/' + keyword + '/gi') }, '-_id').limit(50);
 			//计算距离
-			// if (shops.length) {
-			// 	const [latitude, longitude] = geohash.split(',');
-			// 	const from = latitude + ',' + longitude;
-			// 	const from = geohash;
-			// 	let to = '20,100';
-			// 	//获取百度地图测局所需经度纬度
-			// 	shops.forEach((item, index) => {
-			// 		const slpitStr = (index == shops.length - 1) ? '' : '|';
-			// 		to += item.latitude + ',' + item.longitude + slpitStr;
-			// 	})
-			// 	//获取距离信息，并合并到数据中
-			// 	const distance_duration = await this.getDistance(from, to)
-			// 	shops.map((item, index) => {
-			// 		return Object.assign(item, distance_duration[index])
-			// 	})
-			// }
+			if (shops.length) {
+				const [latitude, longitude] = geohash.split(',');
+				const from = latitude + ',' + longitude;
+				// const from = geohash;
+				let to = '111,22';
+				//获取百度地图测局所需经度纬度
+				shops.forEach((item, index) => {
+					const slpitStr = (index == shops.length - 1) ? '' : '|';
+					to += item.latitude + ',' + item.longitude + slpitStr;
+				})
+				//获取距离信息，并合并到数据中
+				const distance_duration = await this.getDistance(from, to)
+				shops.map((item, index) => {
+					return Object.assign(item, distance_duration[index])
+				})
+			}
 			res.send(shops);
 		} catch (err) {
 			console.log('搜索餐馆数据失败');

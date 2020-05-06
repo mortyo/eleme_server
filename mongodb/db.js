@@ -1,11 +1,12 @@
 'use strict';
 
 import chalk from 'chalk';
-import config from 'config-lite';
+var config = require('config-lite')('config'); //config-lite 会根据环境变量（NODE_ENV）的不同从当前执行进程目录下的 config 目录加载不同的配置文件。
 import mongoose from 'mongoose';
 
 mongoose.Promise = global.Promise;
-mongoose.connect(config.url, {useMongoClient:true});
+mongoose.set('useCreateIndex', true);
+mongoose.connect(config.url ,{ useNewUrlParser: true, useUnifiedTopology: true });
 
 const db = mongoose.connection;
 

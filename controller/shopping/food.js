@@ -26,7 +26,7 @@ class Food extends BaseComponent {
 		this.addFood = this.addFood.bind(this);
 		this.addMenu = this.addMenu.bind(this);
 		this.allMenu = this.allMenu.bind(this);
-		this.getSpecfoods = this.getSpecfoods.bind(this);
+		this.getSpecs = this.getSpecs.bind(this);
 		this.updateFood = this.updateFood.bind(this);
 	}
 	async initData(shop_id) {
@@ -58,7 +58,7 @@ class Food extends BaseComponent {
 					throw new Error('必须填写食品名称');
 				} else if (!fields.image_path) {
 					throw new Error('必须上传食品图片');
-				} else if (!fields.specfoods.length) {
+				} else if (!fields.specs.length) {
 					throw new Error('至少填写一种规格');
 				} else if (!fields.category_id) {
 					throw new Error('食品类型ID错误');
@@ -118,7 +118,7 @@ class Food extends BaseComponent {
 				rating_count,
 				month_sales,
 				tips,
-				specfoods: []
+				specs: []
 			}
 			if (fields.activity) {
 				newFood.activity = {
@@ -148,10 +148,10 @@ class Food extends BaseComponent {
 				})
 			}
 			try {
-				const specfoods = await this.getSpecfoods(fields);
-				newFood.specfoods = specfoods;
+				const specs = await this.getSpecs(fields);
+				newFood.specs = specs;
 			} catch (err) {
-				console.log('添加specfoods失败', err);
+				console.log('添加specs失败', err);
 				res.send({
 					status: 0,
 					type: 'ERROR_DATA',
@@ -203,8 +203,7 @@ class Food extends BaseComponent {
 			if (shop_id && Number(shop_id)) {
 				filter = { shop_id }
 			}
-
-			const count = await FoodModel.find(filter).count();
+			const count = await FoodModel.find(filter).countDocuments();
 			res.send({
 				status: 1,
 				count,
@@ -241,8 +240,8 @@ class Food extends BaseComponent {
 				} else if (!image_path) {
 					throw new Error('食品图片地址错误');
 				}
-				const specfoods = await this.getSpecfoods(fields);
-				let newData = { name, description, image_path,category_id , specfoods };
+				const specs = await this.getSpecs(fields);
+				let newData = { name, description, image_path,category_id , specs };
 				const food = await FoodModel.findOneAndUpdate({ id }, { $set: newData });
 				const menu = await MenuModel.findOne({ id: category_id })
 				let subFood = menu.foods.id(food._id);
@@ -387,24 +386,25 @@ class Food extends BaseComponent {
 		}
 	}
 	//选择食物规格
-	async getSpecfoods(fields) {
-		let specfoods = []
-		if (fields.specfoods.length < 2) {
-			specfoods.push({
-				specs_name: fields.specfoods[0].specs_name,
-				price: fields.specfoods[0].price,
-				packing_fee: fields.specfoods[0].packing_fee
+	async getSpecs(fields) {
+		let specs = []
+		console.log(fields)
+		if (fields.specs.length < 2) {
+			specs.push({
+				specs_name: fields.specs[0].specs_name,
+				price: fields.specs[0].price,
+				packing_fee: fields.specs[0].packing_fee
 			})
 		} else {
-			for (let i = 0; i < fields.specfoods.length; i++) {
-				specfoods.push({
-					specs_name: fields.specfoods[i].specs_name,
-					price: fields.specfoods[i].price,
-					packing_fee: fields.specfoods[i].packing_fee
+			for (let i = 0; i < fields.specs.length; i++) {
+				specs.push({
+					specs_name: fields.specs[i].specs_name,
+					price: fields.specs[i].price,
+					packing_fee: fields.specs[i].packing_fee
 				})
 			}
 		}
-		return specfoods
+		return specs
 	}
 }
 
