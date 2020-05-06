@@ -27,8 +27,6 @@ app.use(session({
 router(app);
 app.use(history());
 app.use(express.static('public'));  //配置静态文件路径
-// app.use('/eleme', express.static('./eleme'))
-// app.use('/admin', express.static('./admin'))
 app.listen(config.port, () => {
 	console.log(
 		chalk.green(`成功监听端口：${config.port + ',' + Date()}`)
